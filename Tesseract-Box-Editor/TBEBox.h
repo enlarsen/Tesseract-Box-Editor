@@ -13,9 +13,11 @@
 @property (nonatomic) unichar character;
 @property (nonatomic) NSUInteger x;
 @property (nonatomic) NSUInteger y;
-@property (nonatomic) NSUInteger width;
-@property (nonatomic) NSUInteger height;
+@property (nonatomic) NSUInteger x2;
+@property (nonatomic) NSUInteger y2;
 @property (nonatomic) NSUInteger page;
+@property (nonatomic, readonly) NSUInteger width;
+@property (nonatomic, readonly) NSUInteger height;
 
 @property (nonatomic, strong) NSString *characterAsString;
 

@@ -10,21 +10,41 @@
 
 #import "TBEAppDelegate.h"
 #import "TBEBoxEditorViewController.h"
+#import "TBEImageView.h"
 #import "TBEBoxView.h"
 #import "TBEBox.h"
+#import "TBECharacterView.h"
 
 @interface TBEBoxEditorViewController () <NSWindowDelegate>
 
-@property (weak) IBOutlet NSImageView *mainImageView;
+@property (weak) IBOutlet TBEImageView *mainImageView;
 @property (unsafe_unretained) IBOutlet NSWindow *window;
 @property (weak) IBOutlet NSTableView *boxesTableView;
 @property (weak) IBOutlet NSArrayController *tableArrayController;
 @property (strong, nonatomic) CAShapeLayer *selectionLayer;
 @property (nonatomic) NSPoint croppedPoint; // new lower left point relative to image
+// For locating the resize handles on the selection rectangle
+@property (nonatomic) NSPoint topHandle;
+@property (nonatomic) NSPoint bottomHandle;
+@property (nonatomic) NSPoint leftHandle;
+@property (nonatomic) NSPoint rightHandle;
+@property (weak) IBOutlet TBECharacterView *characterView;
+@property (strong, nonatomic) NSImage *imageFromFile;
+
+@property (strong, nonatomic) NSMutableArray *selectionHandleLayers;
 
 @end
 
 @implementation TBEBoxEditorViewController
+
+- (NSMutableArray *)selectionHandleLayers
+{
+    if(!_selectionHandleLayers)
+    {
+        _selectionHandleLayers = [[NSMutableArray alloc] init];
+    }
+    return _selectionHandleLayers;
+}
 
 - (void)awakeFromNib
 {
@@ -45,6 +65,7 @@
     if(self.tableArrayController.selectedObjects.count)
     {
         TBEBox *box = self.tableArrayController.selectedObjects[0];
+        [self updateCharacterView:box];
         [self removeAnimatedSelection];
         [self setupAnimatedSelectionWithBox:box];
     }
@@ -58,6 +79,8 @@
 {
     float verticalPadding = 0.0;
     float horizontalPadding = 0.0;
+    float untransformedVerticalPadding = 0.0;
+    float untransformedHorizontalPadding = 0.0;
     float scaleFactor = 1.0;
     float horizontalScaleFactor = self.mainImageView.frame.size.width /
                                 self.mainImageView.image.size.width;
@@ -74,6 +97,8 @@
 
         float width = self.mainImageView.image.size.width * scaleFactor;
         horizontalPadding = (self.mainImageView.frame.size.width - width) / 2.0;
+        untransformedHorizontalPadding = (self.mainImageView.frame.size.width -
+                                                self.mainImageView.image.size.width) / 2.0;
     }
     if(horizontalScaleFactor - verticalScaleFactor < 0)
     {
@@ -81,15 +106,19 @@
 
         float height = self.mainImageView.image.size.height * scaleFactor;
         verticalPadding = (self.mainImageView.frame.size.height - height) / 2.0;
+        untransformedVerticalPadding = (self.mainImageView.frame.size.height -
+                                              self.mainImageView.image.size.height) / 2.0;
     }
 
     NSLog(@"Horizontal padding: %f, vertical padding: %f", horizontalPadding, verticalPadding);
+    NSLog(@"Untransformed horizontal padding: %f, untransformed vertical padding %f", untransformedHorizontalPadding, untransformedVerticalPadding);
 
     self.selectionLayer = [CAShapeLayer layer];
+//    self.selectionLayer.anchorPoint = CGPointMake(1.0, 1.0);
 
     self.selectionLayer.lineWidth = 0.5;
     self.selectionLayer.strokeColor = [[NSColor redColor] CGColor];
-    NSColor *fillColor = [NSColor colorWithDeviceRed:1.0 green:1.0 blue:30.0 alpha:0.5];
+    NSColor *fillColor = [NSColor colorWithDeviceRed:1.0 green:1.0 blue:0.0 alpha:0.5];
 
     self.selectionLayer.fillColor = [fillColor CGColor];
 
@@ -105,10 +134,45 @@
     [self.selectionLayer addAnimation:dashAnimation forKey:@"linePhase"];
 
 
-    float left = (float)(box.x - self.croppedPoint.x) * scaleFactor + horizontalPadding;
-    float bottom = (float)(box.y - self.croppedPoint.y) * scaleFactor + verticalPadding;
-    float right = (float)(box.width - self.croppedPoint.x) * scaleFactor + horizontalPadding;
-    float top = (float)(box.height - self.croppedPoint.y) * scaleFactor + verticalPadding;
+    CATransform3D transform = CATransform3DIdentity;
+    transform = CATransform3DTranslate(transform, horizontalPadding, verticalPadding, 0.0);
+    transform = CATransform3DScale(transform, scaleFactor, scaleFactor, 1.0);
+    transform = CATransform3DTranslate(transform, -self.croppedPoint.x, -self.croppedPoint.y, 0.0);
+
+
+//  transform = CATransform3DTranslate(transform, untransformedHorizontalPadding, untransformedVerticalPadding, 0);
+
+//    float left = (float)(box.x - self.croppedPoint.x) * scaleFactor + horizontalPadding;
+//    float bottom = (float)(box.y - self.croppedPoint.y) * scaleFactor + verticalPadding;
+//    float right = (float)(box.x2 - self.croppedPoint.x) * scaleFactor + horizontalPadding;
+//    float top = (float)(box.y2 - self.croppedPoint.y) * scaleFactor + verticalPadding;
+
+    float left = (float)box.x; // - self.croppedPoint.x;
+    float bottom = (float)box.y; // - self.croppedPoint.y;
+    float right = (float)box.x2; // - self.croppedPoint.x;
+    float top = (float)box.y2; // - self.croppedPoint.y;
+
+    NSLog(@"Cropped point: %@", NSStringFromPoint(self.croppedPoint));
+
+    self.leftHandle = NSMakePoint(left, bottom + (top - bottom) / 2);
+    self.rightHandle = NSMakePoint(right, bottom + (top - bottom) / 2);
+    self.topHandle = NSMakePoint(left + (right - left) / 2, top);
+    self.bottomHandle = NSMakePoint(left + (right - left) / 2, bottom);
+
+    NSLog(@"Left handle: %@", NSStringFromPoint(self.leftHandle));
+    NSLog(@"Right handle: %@", NSStringFromPoint(self.rightHandle));
+    NSLog(@"Top handle: %@", NSStringFromPoint(self.topHandle));
+    NSLog(@"Bottom handle: %@", NSStringFromPoint(self.bottomHandle));
+
+    self.selectionLayer.transform = transform;
+    NSLog(@"Transformation: %f %f %f %f", transform.m11, transform.m22, transform.m41, transform.m42);
+    NSLog(@"Left handle transformed: %@", NSStringFromPoint(CGPointApplyAffineTransform(self.leftHandle, CATransform3DGetAffineTransform(transform))));
+
+//    [self drawHandle:self.leftHandle];
+//    [self drawHandle:self.rightHandle];
+//    [self drawHandle:self.topHandle];
+//    [self drawHandle:self.bottomHandle];
+
 
     CGMutablePathRef path = CGPathCreateMutable();
 
@@ -121,11 +185,47 @@
     self.selectionLayer.path = path;
     CGPathRelease(path);
 
+
+}
+
+- (void)drawHandle:(NSPoint)point
+{
+    CGFloat size = 1.0; // half the width of the selection handle
+    CGMutablePathRef path = CGPathCreateMutable();
+
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.lineWidth = 0.5;
+    layer.strokeColor = [[NSColor redColor] CGColor];
+    layer.fillColor = [[NSColor redColor] CGColor];
+    layer.transform = self.selectionLayer.transform;
+
+    [self.mainImageView.layer addSublayer:layer];
+
+
+    CGPathMoveToPoint(path, NULL, point.x - size, point.y - size);
+    CGPathAddLineToPoint(path, NULL, point.x - size, point.y + size);
+    CGPathAddLineToPoint(path, NULL, point.x + size, point.y + size);
+    CGPathAddLineToPoint(path, NULL, point.x + size, point.y - size);
+    CGPathCloseSubpath(path);
+
+    layer.path = path;
+
+    CGPathRelease(path);
+
+    [self.selectionHandleLayers addObject:layer];
+    return;
 }
 
 - (void)removeAnimatedSelection
 {
     [self.selectionLayer removeFromSuperlayer];
+    [self.selectionHandleLayers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        CAShapeLayer *layer = obj;
+        [layer removeFromSuperlayer];
+    }];
+
+    [self.selectionHandleLayers removeAllObjects];
+
     self.selectionLayer = nil;
 }
 
@@ -149,8 +249,10 @@
 
             NSURL *url = [openPanel URL];
             NSURL *boxUrl = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:@"box"];
-            self.mainImageView.image =  [self trimImage:[[NSImage alloc] initByReferencingURL:[openPanel URL]]];
+            self.imageFromFile  = [[NSImage alloc] initByReferencingURL:[openPanel URL]];
+            self.mainImageView.image =  [self trimImage:self.imageFromFile];
 //            self.mainImageView.image =  [[NSImage alloc] initByReferencingURL:[openPanel URL]];
+//            self.croppedPoint = CGPointZero;
             self.boxes = [[TBEBoxes alloc] initWithFile:[boxUrl path]];
 
 
@@ -197,67 +299,88 @@
 //    size_t width = CGImageGetWidth(inImage);
 //    size_t height = CGImageGetHeight(inImage);
 //
-    CGPoint top,left,right,bottom;
+    CGFloat top = 0.0, left = 0.0, right = 0.0, bottom = 0.0;
 
-    BOOL breakOut = NO;
-    for (NSUInteger x = 0;breakOut==NO && x < width; x++)
+    BOOL stop = NO;
+    for (NSUInteger x = 0; x < width; x++)
     {
+        if(stop)
+        {
+            break;
+        }
         for (NSUInteger y = 0; y < height; y++)
         {
             NSUInteger loc = x + (y * width);
             loc *= 4;
             if (rawData[loc] != 0xff)
             {
-                left = CGPointMake(x, y);
-                breakOut = YES;
+                left = x;
+                stop = YES;
                 break;
             }
         }
     }
 
-    breakOut = NO;
-    for (int y = 0;breakOut==NO && y < height; y++)
+    stop = NO;
+    for (int y = 0; y < height; y++)
     {
+        if(stop)
+        {
+            break;
+        }
+
         for (NSUInteger x = 0; x < width; x++)
         {
             NSUInteger loc = x + (y * width);
             loc *= 4;
             if (rawData[loc] != 0xff)
             {
-                top = CGPointMake(x, y);
-                breakOut = YES;
+                top = y;
+                stop = YES;
                 break;
             }
 
         }
     }
 
-    breakOut = NO;
-    for (NSInteger y = height-1;breakOut==NO && y >= 0; y--)
+    stop = NO;
+    for (NSInteger y = height-1; y >= 0; y--)
     {
+        if(stop)
+        {
+            break;
+        }
+
         for (NSInteger x = width - 1; x >= 0; x--)
         {
             NSUInteger loc = x + (y * width);
             loc *= 4;
-            if (rawData[loc] != 0xff) {
-                bottom = CGPointMake(x, y);
-                breakOut = YES;
+            if (rawData[loc] != 0xff)
+            {
+                bottom = y;
+                stop = YES;
                 break;
             }
 
         }
     }
 
-    breakOut = NO;
-    for (NSInteger x = width - 1;breakOut==NO && x >= 0; x--) {
+    stop = NO;
+    for (NSInteger x = width - 1; x >= 0; x--)
+    {
+        if(stop)
+        {
+            break;
+        }
 
-        for (NSInteger y = height - 1; y >= 0; y--) {
-
+        for (NSInteger y = height - 1; y >= 0; y--)
+        {
             NSUInteger loc = (x + (y * width));
             loc *= 4;
-            if (rawData[loc] != 0xff) {
-                right = CGPointMake(x, y);
-                breakOut = YES;
+            if (rawData[loc] != 0xff)
+            {
+                right = x;
+                stop = YES;
                 break;
             }
 
@@ -265,9 +388,10 @@
     }
 
 
+// TODO add a little padding around the crop so the selection handles are visible
 
 //    NSRect cropRect = NSMakeRect(left.x, top.y, right.x - left.x, bottom.y - top.y);
-    NSRect cropRect = NSMakeRect(left.x, height - bottom.y - 1, right.x - left.x + 1, bottom.y - top.y + 1);
+    NSRect cropRect = NSMakeRect(left - 5, height - bottom - 6, right - left + 10, bottom - top + 10);
 
 //    NSUInteger x = 100; NSUInteger y = 0;
 //    NSRect cropRect = NSMakeRect(x, y, width-x, height-y);
@@ -290,15 +414,30 @@
 
     NSImage *croppedImage = [[NSImage alloc] initWithData:[bitmapRep representationUsingType:NSPNGFileType properties:Nil]];
 
-    self.croppedPoint = NSMakePoint(left.x, height - bottom.y - 1);
-    return croppedImage;
+    self.croppedPoint = NSMakePoint(left - 5, height - bottom - 6);
+    return target;
 
 
 
     //return target;
 }
 
-+ (NSArray*)getRGBAsFromImage:(NSImage*)image atX:(int)xx andY:(int)yy count:(int)count
+// x = box.x, y=box.y, count = height * width, image=tiff
+
+- (void)updateCharacterView:(TBEBox *)box
+{
+//    NSArray *characterBytes = [self getRGBAsFromImage:self.mainImageView.image atX:box.x andY:box.y count:box.width * box.height];
+//    [self.characterView updateCharacter:characterBytes size:NSMakeSize(box.width, box.height)];
+
+    [self.imageFromFile lockFocus];
+    NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(box.x - 5, box.y - 5, box.width + 10, box.height + 10)];
+    [self.imageFromFile unlockFocus];
+    NSImage *image = [[NSImage alloc] initWithData:[bitmapRep representationUsingType:NSPNGFileType properties:nil]];
+
+    [self.characterView updateCharacter:image];
+}
+
+- (NSArray*)getRGBAsFromImage:(NSImage*)image atX:(NSUInteger)xx andY:(NSUInteger)yy count:(NSUInteger)count
 {
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:count];
 
@@ -366,7 +505,36 @@
 //    NSLog(@"width/width * 100: %f", self.mainImageView.frame.size.width / self.mainImageView.image.size.width * 100.0);
 //
 
+    // TODO: need to recalculate the size and position of the selection rectangle
+
     return frameSize;
+}
+
+#pragma mark - mouse events
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    NSPoint p = [theEvent locationInWindow];
+    NSPoint currentPoint = [self.mainImageView convertPoint:p fromView:nil];
+    NSLog(@"Mouse down at: %@", NSStringFromPoint(currentPoint));
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+    NSPoint p = [theEvent locationInWindow];
+    NSPoint currentPoint = [self.mainImageView convertPoint:p fromView:nil];
+    NSLog(@"Mouse up at: %@", NSStringFromPoint(currentPoint));
+
+}
+
+- (void)mouseDragged:(NSEvent *)theEvent
+{
+
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+
 }
 
 @end

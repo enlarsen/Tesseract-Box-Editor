@@ -45,4 +45,13 @@
     }
 }
 
+- (NSUInteger)width
+{
+    return self.x2 - self.x;
+}
+
+- (NSUInteger)height
+{
+    return self.y2 - self.y;
+}
 @end

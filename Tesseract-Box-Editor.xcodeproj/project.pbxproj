@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B3295C46193A1E0900DA470E /* TBEImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B3295C45193A1E0900DA470E /* TBEImageView.m */; };
+		B3295C49193A4E7A00DA470E /* TBECharacterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B3295C48193A4E7A00DA470E /* TBECharacterView.m */; };
 		B3C9261219340283006A1020 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C9261119340283006A1020 /* Cocoa.framework */; };
 		B3C9261C19340283006A1020 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B3C9261A19340283006A1020 /* InfoPlist.strings */; };
 		B3C9261E19340283006A1020 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C9261D19340283006A1020 /* main.m */; };
@@ -36,6 +38,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B3295C44193A1E0900DA470E /* TBEImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBEImageView.h; sourceTree = "<group>"; };
+		B3295C45193A1E0900DA470E /* TBEImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEImageView.m; sourceTree = "<group>"; };
+		B3295C47193A4E7A00DA470E /* TBECharacterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBECharacterView.h; sourceTree = "<group>"; };
+		B3295C48193A4E7A00DA470E /* TBECharacterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBECharacterView.m; sourceTree = "<group>"; };
 		B3C9260E19340283006A1020 /* Tesseract Box Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tesseract Box Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3C9261119340283006A1020 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B3C9261419340283006A1020 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -133,6 +139,10 @@
 				B3C9262319340283006A1020 /* TBEAppDelegate.h */,
 				B3C9262419340283006A1020 /* TBEAppDelegate.m */,
 				B3C9262619340283006A1020 /* MainMenu.xib */,
+				B3295C47193A4E7A00DA470E /* TBECharacterView.h */,
+				B3295C48193A4E7A00DA470E /* TBECharacterView.m */,
+				B3295C44193A1E0900DA470E /* TBEImageView.h */,
+				B3295C45193A1E0900DA470E /* TBEImageView.m */,
 				B3FDE9341937E125009CBE86 /* TBEBoxView.h */,
 				B3FDE9351937E125009CBE86 /* TBEBoxView.m */,
 				B3FDE9311937C22A009CBE86 /* TBEUnicharTransformer.h */,
@@ -280,9 +290,11 @@
 			files = (
 				B3FDE9331937C22A009CBE86 /* TBEUnicharTransformer.m in Sources */,
 				B3C9264719340430006A1020 /* TBEBoxEditorViewController.m in Sources */,
+				B3295C46193A1E0900DA470E /* TBEImageView.m in Sources */,
 				B3C9262519340283006A1020 /* TBEAppDelegate.m in Sources */,
 				B3C9264D19355259006A1020 /* TBEBoxes.m in Sources */,
 				B3C9261E19340283006A1020 /* main.m in Sources */,
+				B3295C49193A4E7A00DA470E /* TBECharacterView.m in Sources */,
 				B3FDE9361937E125009CBE86 /* TBEBoxView.m in Sources */,
 				B3C9264A19354C1A006A1020 /* TBEBox.m in Sources */,
 			);

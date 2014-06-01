@@ -93,9 +93,9 @@
         [scanner scanInt:&intValue];
         box.y = intValue;
         [scanner scanInt:&intValue];
-        box.width = intValue;
+        box.x2 = intValue;
         [scanner scanInt:&intValue];
-        box.height = intValue;
+        box.y2 = intValue;
         [scanner scanInt:&intValue];
         box.page = intValue;
         [self.boxes addObject:box];
