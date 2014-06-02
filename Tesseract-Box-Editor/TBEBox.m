@@ -16,6 +16,8 @@
 @implementation TBEBox
 
 @synthesize characterAsString = _characterAsString;
+@synthesize width = _width;
+@synthesize height = _height;
 
 - (NSString *)characterAsString
 {
@@ -54,4 +56,15 @@
 {
     return self.y2 - self.y;
 }
+
+- (void)setHeight:(NSUInteger)height
+{
+    self.y2 = self.y + height;
+}
+
+- (void)setWidth:(NSUInteger)width
+{
+    self.x2 = self.x + width;
+}
+
 @end

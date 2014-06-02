@@ -28,8 +28,11 @@
 @property (nonatomic) NSPoint bottomHandle;
 @property (nonatomic) NSPoint leftHandle;
 @property (nonatomic) NSPoint rightHandle;
-@property (weak) IBOutlet TBECharacterView *characterView;
 @property (strong, nonatomic) NSImage *imageFromFile;
+
+
+
+
 
 @property (strong, nonatomic) NSMutableArray *selectionHandleLayers;
 

@@ -10,6 +10,28 @@
 
 @implementation TBECharacterView
 
++ (NSSet *)keyPathsForValuesAffectingHeight
+{
+    return [NSSet setWithObjects:NSStringFromSelector(@selector(updateCharacter:)), nil];
+}
+
++ (NSSet *)keyPathsForValuesAffectingWidth
+{
+    return [NSSet setWithObjects:NSStringFromSelector(@selector(updateCharacter:)), nil];
+}
+
+#pragma mark - properties
+
+- (NSUInteger)width
+{
+    return self.image.size.width;
+}
+
+- (NSUInteger)height
+{
+    return self.image.size.height;
+}
+
 - (void)awakeFromNib
 {
     self.imageScaling = NSImageScaleProportionallyUpOrDown;   
@@ -56,6 +78,7 @@
 //    }];
 
     self.image = image;
+
 }
 
 @end

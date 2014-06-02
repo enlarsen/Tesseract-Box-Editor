@@ -10,6 +10,9 @@
 
 @interface TBECharacterView : NSImageView
 
+@property (nonatomic) NSUInteger width;
+@property (nonatomic) NSUInteger height;
+
 - (void)updateCharacter:(NSImage *)image;
 
 @end

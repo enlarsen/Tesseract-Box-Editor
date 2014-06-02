@@ -10,9 +10,13 @@
 #import "TBEBoxes.h"
 #import "TBEBoxView.h"
 
+@class TBECharacterView;
+
 @interface TBEBoxEditorViewController : NSViewController <NSTableViewDataSource>
 
 @property (nonatomic, strong) TBEBoxes *boxes;
 @property (weak) IBOutlet TBEBoxView *boxView;
+@property (weak) IBOutlet TBECharacterView *characterView;
+
 
 @end
