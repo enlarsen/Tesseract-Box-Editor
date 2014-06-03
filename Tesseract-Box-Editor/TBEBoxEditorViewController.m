@@ -22,15 +22,15 @@
 @property (weak) IBOutlet NSTableView *boxesTableView;
 @property (weak) IBOutlet NSArrayController *tableArrayController;
 @property (strong, nonatomic) CAShapeLayer *selectionLayer;
-@property (nonatomic) NSPoint croppedPoint; // new lower left point relative to image
+@property (nonatomic) NSPoint cropPoint; // new lower left point relative to image
 // For locating the resize handles on the selection rectangle
 @property (nonatomic) NSPoint topHandle;
 @property (nonatomic) NSPoint bottomHandle;
 @property (nonatomic) NSPoint leftHandle;
 @property (nonatomic) NSPoint rightHandle;
-@property (strong, nonatomic) NSImage *imageFromFile;
+@property (strong, nonatomic) NSMutableArray *pagesFromImage;
 
-
+@property (nonatomic) NSUInteger currentRepresentation; // Page number in multipart tiffs
 
 
 
@@ -47,6 +47,15 @@
         _selectionHandleLayers = [[NSMutableArray alloc] init];
     }
     return _selectionHandleLayers;
+}
+
+- (NSMutableArray *)pagesFromImage
+{
+    if(!_pagesFromImage)
+    {
+        _pagesFromImage = [NSMutableArray array];
+    }
+    return _pagesFromImage;
 }
 
 - (void)awakeFromNib
@@ -68,6 +77,18 @@
     if(self.tableArrayController.selectedObjects.count)
     {
         TBEBox *box = self.tableArrayController.selectedObjects[0];
+        if(box.page != self.currentRepresentation)
+        {
+
+            if(self.currentRepresentation < self.pagesFromImage.count)
+            {
+                NSSize size = ((NSBitmapImageRep *)(self.pagesFromImage[box.page])).size;
+                NSImage *image = [[NSImage alloc] initWithSize:size];
+                [image addRepresentation:self.pagesFromImage[box.page]];
+                self.mainImageView.image =  [self trimImage:image];
+                self.currentRepresentation = box.page;
+            }
+        }
         [self updateCharacterView:box];
         [self removeAnimatedSelection];
         [self setupAnimatedSelectionWithBox:box];
@@ -140,7 +161,7 @@
     CATransform3D transform = CATransform3DIdentity;
     transform = CATransform3DTranslate(transform, horizontalPadding, verticalPadding, 0.0);
     transform = CATransform3DScale(transform, scaleFactor, scaleFactor, 1.0);
-    transform = CATransform3DTranslate(transform, -self.croppedPoint.x, -self.croppedPoint.y, 0.0);
+    transform = CATransform3DTranslate(transform, -self.cropPoint.x, -self.cropPoint.y, 0.0);
 
 
 //  transform = CATransform3DTranslate(transform, untransformedHorizontalPadding, untransformedVerticalPadding, 0);
@@ -155,7 +176,7 @@
     float right = (float)box.x2; // - self.croppedPoint.x;
     float top = (float)box.y2; // - self.croppedPoint.y;
 
-    NSLog(@"Cropped point: %@", NSStringFromPoint(self.croppedPoint));
+    NSLog(@"Cropped point: %@", NSStringFromPoint(self.cropPoint));
 
     self.leftHandle = NSMakePoint(left, bottom + (top - bottom) / 2);
     self.rightHandle = NSMakePoint(right, bottom + (top - bottom) / 2);
@@ -252,13 +273,17 @@
 
             NSURL *url = [openPanel URL];
             NSURL *boxUrl = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:@"box"];
-            self.imageFromFile  = [[NSImage alloc] initByReferencingURL:[openPanel URL]];
-            self.mainImageView.image =  [self trimImage:self.imageFromFile];
+            NSImage *imageFromFile  = [[NSImage alloc] initByReferencingURL:[openPanel URL]];
+            [imageFromFile.representations enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+            {
+                [self.pagesFromImage addObject:obj];
+            }];
+            self.mainImageView.image =  [self trimImage:imageFromFile];
 //            self.mainImageView.image =  [[NSImage alloc] initByReferencingURL:[openPanel URL]];
 //            self.croppedPoint = CGPointZero;
             self.boxes = [[TBEBoxes alloc] initWithFile:[boxUrl path]];
 
-
+            self.currentRepresentation = 0; // start off at the first page
         }
 	}];
 
@@ -417,7 +442,7 @@
 
     NSImage *croppedImage = [[NSImage alloc] initWithData:[bitmapRep representationUsingType:NSPNGFileType properties:Nil]];
 
-    self.croppedPoint = NSMakePoint(left - 5, height - bottom - 6);
+    self.cropPoint = NSMakePoint(left - 5, height - bottom - 6);
     return target;
 
 
@@ -432,12 +457,15 @@
 //    NSArray *characterBytes = [self getRGBAsFromImage:self.mainImageView.image atX:box.x andY:box.y count:box.width * box.height];
 //    [self.characterView updateCharacter:characterBytes size:NSMakeSize(box.width, box.height)];
 
-    [self.imageFromFile lockFocus];
-    NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(box.x - 5, box.y - 5, box.width + 10, box.height + 10)];
-    [self.imageFromFile unlockFocus];
-    NSImage *image = [[NSImage alloc] initWithData:[bitmapRep representationUsingType:NSPNGFileType properties:nil]];
+    NSImage *image = [[NSImage alloc] initWithData:[self.pagesFromImage[box.page] representationUsingType:NSPNGFileType properties:nil]];
+//    [image addRepresentation:self.pagesFromImage[box.page]];
 
-    [self.characterView updateCharacter:image];
+    [image lockFocus];
+    NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(box.x - 5, box.y - 5, box.width + 10, box.height + 10)];
+    [image unlockFocus];
+    NSImage *croppedImage = [[NSImage alloc] initWithData:[bitmapRep representationUsingType:NSPNGFileType properties:nil]];
+
+    [self.characterView updateCharacter:croppedImage withCropPoint:self.cropPoint];
 }
 
 - (NSArray*)getRGBAsFromImage:(NSImage*)image atX:(NSUInteger)xx andY:(NSUInteger)yy count:(NSUInteger)count

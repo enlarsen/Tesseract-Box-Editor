@@ -67,4 +67,18 @@
     self.x2 = self.x + width;
 }
 
+- (NSString *)debugDescription
+{
+    return [NSString stringWithFormat:@"<%@:%p%@>",
+            [self class],
+            self,
+            @{@"x": @(_x),
+              @"y": @(_y),
+              @"x2": @(_x2),
+              @"y2": @(_y2),
+              @"width": @(self.width),
+              @"height": @(self.height)
+              }];
+
+}
 @end
