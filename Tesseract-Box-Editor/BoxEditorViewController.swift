@@ -22,35 +22,23 @@ class BoxEditorViewController: NSViewController
     var selectionHandleLayers: CAShapeLayer[] = []
 
     var cropPoint = CGPointZero
-    var topHandle = CGPointZero
-    var bottomHandle = CGPointZero
-    var leftHandle = CGPointZero
-    var rightHandle = CGPointZero
+//    var topHandle = CGPointZero
+//    var bottomHandle = CGPointZero
+//    var leftHandle = CGPointZero
+//    var rightHandle = CGPointZero
+    var observing = false
 
     var pagesFromImage: NSBitmapImageRep[] = []
     var currentRepresentation: Int?
 
-    var boxes: Boxes?
+    var boxes: Box[] = []
 
     override func awakeFromNib()
     {
         mainImageView.imageScaling = .ImageScaleProportionallyUpOrDown
+
     }
 
-//    init()
-//    {
-//        super.init()
-//    }
-//
-//    init(coder: NSCoder!)
-//    {
-//        super.init()
-//    }
-//
-//    init(nibName nibNameOrNil: String!, bundle nibBundleOrNil: NSBundle!)
-//    {
-//        super.init()
-//    }
 
     override func observeValueForKeyPath(keyPath: String!, ofObject object: AnyObject!, change: NSDictionary!, context: CMutableVoidPointer)
     {
@@ -69,145 +57,17 @@ class BoxEditorViewController: NSViewController
 
                 }
             }
-            updateCharacterView(box)
-            removeAnimatedSelection()
-            setupAnimatedSelectionWithBox(box)
+        updateCharacterView(box)
+        mainImageView.removeAnimatedSelection()
+        mainImageView.setupAnimatedSelectionRect(box.boxToNSRect(), cropPoint: cropPoint)
         }
         else
         {
-            removeAnimatedSelection()
+            mainImageView.removeAnimatedSelection()
         }
     }
 
-    func setupAnimatedSelectionWithBox(box: Box)
-    {
-        var verticalPadding = 0.0
-        var horizontalPadding = 0.0
-        var untransformedVerticalPadding = 0.0
-        var untransformedHorizontalPadding = 0.0
-        var scaleFactor = 1.0
-        let horizontalScaleFactor = mainImageView.frame.size.width / mainImageView.image.size.width
-        let verticalScaleFactor = mainImageView.frame.size.height / mainImageView.image.size.height
-
-        NSLog("horizontal scale: \(horizontalScaleFactor) vertical scale: \(verticalScaleFactor)")
-
-        if verticalScaleFactor - horizontalScaleFactor < 0
-        {
-            scaleFactor = verticalScaleFactor
-
-            let width = mainImageView.image.size.width * scaleFactor
-            horizontalPadding = (mainImageView.frame.size.width - width) / 2.0
-            untransformedHorizontalPadding = (mainImageView.frame.size.width - mainImageView.image.size.width) / 2.0
-        }
-
-        if horizontalScaleFactor - verticalScaleFactor < 0
-        {
-            scaleFactor = horizontalScaleFactor
-
-            let height = mainImageView.image.size.height * scaleFactor
-            verticalPadding = (mainImageView.frame.size.height - height) / 2.0
-            untransformedVerticalPadding = (mainImageView.frame.size.height - mainImageView.image.size.height) / 2.0
-
-        }
-
-        NSLog("Horizontal padding: \(horizontalPadding), vertical padding: \(verticalPadding)")
-        NSLog("Untransformed horizontal padding: \(untransformedHorizontalPadding), untransformed vertical padding: \(untransformedVerticalPadding)")
-
-        selectionLayer = CAShapeLayer()
-        selectionLayer.lineWidth = 0.5
-        selectionLayer.strokeColor = NSColor.redColor().CGColor
-        selectionLayer.fillColor = NSColor(deviceRed: 1.0, green: 1.0, blue: 0.0, alpha: 0.5).CGColor
-        selectionLayer.lineDashPattern = [10, 15]
-        mainImageView.layer.addSublayer(selectionLayer)
-
-        let dashAnimation = CABasicAnimation(keyPath: "lineDashPhase")
-        dashAnimation.fromValue = 0.0
-        dashAnimation.toValue = 15.0
-        dashAnimation.duration = 10.0
-        dashAnimation.repeatCount = 10000 /* HUGE_VALF undefined */
-        selectionLayer.addAnimation(dashAnimation, forKey: "linePhase")
-
-        var transform = CATransform3DIdentity
-        transform = CATransform3DTranslate(transform, horizontalPadding, verticalPadding, 0.0)
-        transform = CATransform3DScale(transform, scaleFactor, scaleFactor, 1.0)
-        transform = CATransform3DTranslate(transform, cropPoint.x, cropPoint.y, 0.0)
-
-        let left = CGFloat(box.x)
-        let bottom = CGFloat(box.y)
-        let right = CGFloat(box.x + box.width)
-        let top = CGFloat(box.y + box.height)
-
-        NSLog("Cropped point: \(cropPoint)")
-
-        leftHandle = NSPoint(x: left, y: bottom + (top - bottom) / 2.0)
-        rightHandle = NSPoint(x: right, y: bottom + (top - bottom) / 2.0)
-        topHandle = NSPoint(x: left + (right - left) / 2.0, y: top)
-        bottomHandle = NSPoint(x: (left + (right - left) / 2.0), y: bottom)
-
-        NSLog("Left handle: \(leftHandle)")
-        NSLog("Right handle: \(rightHandle)")
-        NSLog("Top handle: \(topHandle)")
-        NSLog("Bottom Handle: \(bottomHandle)")
-
-        selectionLayer.transform = transform
-        NSLog("Transformation: \(transform.m11) \(transform.m22) \(transform.m41) \(transform.m42)")
-        NSLog("Left handle transformed: %@", NSStringFromPoint(CGPointApplyAffineTransform(leftHandle, CATransform3DGetAffineTransform(transform))))
-
-        drawHandle(leftHandle)
-        drawHandle(rightHandle)
-        drawHandle(topHandle)
-        drawHandle(bottomHandle)
-
-        let path = CGPathCreateMutable()
-
-        CGPathMoveToPoint(path, nil, left, bottom)
-        CGPathAddLineToPoint(path, nil, left, top)
-        CGPathAddLineToPoint(path, nil, right, top)
-        CGPathAddLineToPoint(path, nil, right, bottom)
-        CGPathCloseSubpath(path)
-
-        selectionLayer.path = path
-
-        return
-    }
-
-    func drawHandle(point: NSPoint)
-    {
-        let size = 0.5
-        let path = CGPathCreateMutable()
-
-        let layer = CAShapeLayer()
-        layer.lineWidth = 0.1
-        layer.strokeColor = NSColor.blueColor().CGColor
-        layer.fillColor = NSColor.blueColor().CGColor
-        layer.transform = selectionLayer.transform
-
-        mainImageView.layer.addSublayer(layer)
-
-        CGPathMoveToPoint(path, nil, point.x - size, point.y - size)
-        CGPathAddLineToPoint(path, nil, point.x - size, point.y + size)
-        CGPathAddLineToPoint(path, nil, point.x + size, point.y + size)
-        CGPathAddLineToPoint(path, nil, point.x + size, point.y - size)
-        CGPathCloseSubpath(path)
-
-        layer.path = path
-
-        selectionHandleLayers += layer
-        return
-    }
-
-    func removeAnimatedSelection()
-    {
-        selectionLayer?.removeFromSuperlayer()
-        for layer in selectionHandleLayers
-        {
-            layer.removeFromSuperlayer()
-        }
-        
-        selectionHandleLayers.removeAll(keepCapacity: true)
-        selectionLayer = nil
-        
-    }
+ 
 
     @IBAction func openMenu(sender: NSMenuItem)
     {
@@ -215,7 +75,11 @@ class BoxEditorViewController: NSViewController
         let openPanel = NSOpenPanel()
         openPanel.allowedFileTypes = ["tiff", "tif", "TIFF", "TIF", "jpg", "jpeg", "JPG", "JPEG"]
         openPanel.canSelectHiddenExtension = true
-
+        if observing
+        {
+            self.tableArrayController.removeObserver(self, forKeyPath: "selection")
+            observing = false
+        }
         openPanel.beginSheetModalForWindow(window, completionHandler: {result in
             if result == NSFileHandlingPanelOKButton
             {
@@ -224,13 +88,18 @@ class BoxEditorViewController: NSViewController
                 let imageFromFile = NSImage(byReferencingURL: url)
                 self.pagesFromImage = imageFromFile.representations as NSBitmapImageRep[]
                 self.mainImageView.image = self.trimImage(imageFromFile)
-                self.boxes = Boxes(file: boxUrl.path)
+                self.parseBoxFile(boxUrl.path)
                 self.currentRepresentation = 0
+
+                self.tableArrayController.addObserver(self, forKeyPath: "selection", options: nil, context: nil)
+                self.observing = true
+
             }
         })
 
     }
 
+    // Coordinates are inverted in this function. (0, 0) is the upper left and y increases down
     func trimImage(image: NSImage) -> NSImage
     {
         let imageRef = image.CGImageForProposedRect(nil, context: nil, hints: nil).takeUnretainedValue()
@@ -243,114 +112,54 @@ class BoxEditorViewController: NSViewController
         let rawData = calloc(height * width * bytesPerPixel, 1)
         let pointer = UnsafePointer<UInt8>(rawData)
         let bytesPerRow = bytesPerPixel * width
-
-
         let bitmapInfo = CGBitmapInfo.fromRaw(CGImageAlphaInfo.PremultipliedLast.toRaw() | CGBitmapInfo.ByteOrder32Big.toRaw())!
-
-
         let context = CGBitmapContextCreate(rawData, width, height, bytesPerComponent, bytesPerRow, colorSpace, bitmapInfo)
 
-
-//        CGColorSpaceRelease(colorSpace)
         CGContextDrawImage(context, CGRect(x: 0, y: 0, width: Int(width), height: Int(height)), imageRef)
-
-//        CGContextRelease(context)
-
 
         var top = 0
         var left = 0
-        var right = 0
-        var bottom = 0
-
-        var stop = false
+        var right = Int(width)
+        var bottom = Int(height)
 
         for var x = 0; x < Int(width); x++
         {
-            if stop
+            if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer)
             {
+                left = x
                 break
             }
-            for var y = 0; y < Int(height); y++
-            {
-                var loc = x + (y * Int(width))
-                loc *= 4
-                if pointer[loc] != 0xff
-                {
-                    left = x
-                    stop = true
-                    break
-                }
-            }
-
         }
-
-        stop = false
-
-        for var y = 0; y < Int(height); y++
-        {
-            if stop
-            {
-                break
-            }
-
-            for var x = 0; x < Int(width); x++
-            {
-                var loc = x + (y * Int(width))
-                loc *= 4
-                if pointer[loc] != 0xff
-                {
-                    top = y
-                    stop = true
-                    break
-                }
-            }
-        }
-
-        stop = false
-
-        for var y = Int(height) - 1; y >= 0; y--
-        {
-            if stop
-            {
-                break
-            }
-
-            for var x = Int(width) - 1; x >= 0; x--
-            {
-                var loc = x + (y * Int(width))
-                loc *= 4
-                if pointer[loc] != 0xff
-                {
-                    bottom = y
-                    stop = true
-                    break
-                }
-            }
-        }
-
-        stop = false
 
         for var x = Int(width) - 1; x >= 0; x--
         {
-            if stop
+            if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer)
             {
+                right = x
                 break
             }
+        }
 
-            for var y = Int(height) - 1; y >= 0; y--
+        for var y = 0; y < Int(height); y++
+        {
+            if scanRow(y, width: Int(width), pointer: pointer)
             {
-                var loc = x + (y * Int(width))
-                loc *= 4
-                if pointer[loc] != 0xff
-                {
-                    right = x
-                    stop = true
-                    break
-                }
+                top = y
+                break
+            }
+        }
+
+        for var y = Int(height) - 1; y >= 0; y--
+        {
+            if scanRow(y, width: Int(width), pointer: pointer)
+            {
+                bottom = y
+                break
             }
         }
 
 
+        // Flip the coordinates to be Mac coordinates and add a border around the cropped image
         let cropRect = NSRect(x: left - 5, y: Int(height) - bottom - 6, width: right - left + 10, height: bottom - top + 10)
         let target = NSImage(size: cropRect.size)
         target.lockFocus()
@@ -372,6 +181,30 @@ class BoxEditorViewController: NSViewController
 
     }
 
+    func scanRow(y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
+    {
+        for var x = 0; x < width; x++
+        {
+            if pointer[(x + y * width) * 4] != 0xff // only check red, could cause trouble
+            {
+                return true
+            }
+        }
+        return false
+    }
+
+    func scanColumn(x: Int, height: Int, width: Int, pointer: UnsafePointer<UInt8>) -> Bool
+    {
+        for var y = 0; y < height; y++
+        {
+            if pointer[(x + y * width) * 4] != 0xff // only check red
+            {
+                return true
+            }
+        }
+        return false
+    }
+
     func updateCharacterView(box: Box)
     {
         let image = NSImage(data: pagesFromImage[box.page].representationUsingType(.NSPNGFileType, properties: nil))
@@ -383,6 +216,52 @@ class BoxEditorViewController: NSViewController
         let croppedImage = NSImage(data: bitmapRep.representationUsingType(.NSPNGFileType, properties: nil))
         characterView.updateCharacter(croppedImage, withCropPoint: NSPoint(x: box.x - 5, y: box.y - 5), andCharacterRect: box.boxToNSRect())
     }
+    
+    // TODO: This needs vastly improved error handling and value checking
+    func parseBoxFile(path: String)
+    {
+        let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: nil)
 
+        fileText.enumerateLinesUsingBlock({line, stop in
+            var box = Box()
+            var intValue: CInt = 0
+            var characterAsString: NSString?
+
+            let scanner = NSScanner(string: line)
+            scanner.caseSensitive = true
+            scanner.charactersToBeSkipped = nil
+
+            scanner.scanUpToString(" ", intoString: &characterAsString)
+
+            if let character = characterAsString
+            {
+                box.character = character
+            }
+
+            scanner.charactersToBeSkipped = NSCharacterSet.whitespaceCharacterSet()
+
+            box.x = self.getNextIntValue(scanner)
+            box.y = self.getNextIntValue(scanner)
+            box.x2 = self.getNextIntValue(scanner)
+            box.y2 = self.getNextIntValue(scanner)
+            box.page = self.getNextIntValue(scanner)
+            self.boxes.append(box)
+            })
+
+
+    }
+
+    func getNextIntValue(scanner: NSScanner) -> Int
+    {
+        var intValue: CInt = 0
+        
+        scanner.scanInt(&intValue)
+        return Int(intValue)
+    }
+    
+    func writeBoxFile(path: String)
+    {
+        
+    }
 
 }

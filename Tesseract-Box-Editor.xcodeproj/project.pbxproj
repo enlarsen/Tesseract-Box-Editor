@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B307F72C1941207100B951B6 /* Boxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B307F72B1941207100B951B6 /* Boxes.swift */; };
 		B34AF637193FDCB400DA19FA /* CharacterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34AF636193FDCB400DA19FA /* CharacterView.swift */; };
+		B35EB4A719450D7A0064A62A /* ImageViewWithSelectionRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */; };
 		B39693BD19424052004E13AA /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39693BC19424052004E13AA /* Box.swift */; };
 		B39693BF19424084004E13AA /* BoxEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39693BE19424084004E13AA /* BoxEditorViewController.swift */; };
 		B39693C11942A0F5004E13AA /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39693C01942A0F5004E13AA /* ImageView.swift */; };
@@ -36,14 +36,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B307F72B1941207100B951B6 /* Boxes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Boxes.swift; sourceTree = "<group>"; };
-		B3295C44193A1E0900DA470E /* TBEImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBEImageView.h; sourceTree = "<group>"; };
-		B3295C45193A1E0900DA470E /* TBEImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEImageView.m; sourceTree = "<group>"; };
-		B3295C47193A4E7A00DA470E /* TBECharacterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBECharacterView.h; sourceTree = "<group>"; };
-		B3295C48193A4E7A00DA470E /* TBECharacterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBECharacterView.m; sourceTree = "<group>"; };
 		B34AF635193FDCB400DA19FA /* Tesseract Box Editor-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tesseract Box Editor-Bridging-Header.h"; sourceTree = "<group>"; };
 		B34AF636193FDCB400DA19FA /* CharacterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterView.swift; sourceTree = "<group>"; };
 		B34AF638193FE36D00DA19FA /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewWithSelectionRect.swift; sourceTree = "<group>"; };
 		B39693BC19424052004E13AA /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		B39693BE19424084004E13AA /* BoxEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxEditorViewController.swift; sourceTree = "<group>"; };
 		B39693C01942A0F5004E13AA /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
@@ -66,14 +62,6 @@
 		B3C9263719340283006A1020 /* Tesseract-Box-EditorTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tesseract-Box-EditorTests-Info.plist"; sourceTree = "<group>"; };
 		B3C9263919340283006A1020 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B3C9263B19340283006A1020 /* Tesseract_Box_EditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tesseract_Box_EditorTests.m; sourceTree = "<group>"; };
-		B3C9264519340430006A1020 /* TBEBoxEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBEBoxEditorViewController.h; sourceTree = "<group>"; };
-		B3C9264619340430006A1020 /* TBEBoxEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEBoxEditorViewController.m; sourceTree = "<group>"; };
-		B3C9264819354C1A006A1020 /* TBEBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBEBox.h; sourceTree = "<group>"; };
-		B3C9264919354C1A006A1020 /* TBEBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEBox.m; sourceTree = "<group>"; };
-		B3C9264B19355259006A1020 /* TBEBoxes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBEBoxes.h; sourceTree = "<group>"; };
-		B3C9264C19355259006A1020 /* TBEBoxes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEBoxes.m; sourceTree = "<group>"; };
-		B3FDE9311937C22A009CBE86 /* TBEUnicharTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBEUnicharTransformer.h; sourceTree = "<group>"; };
-		B3FDE9321937C22A009CBE86 /* TBEUnicharTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBEUnicharTransformer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,24 +130,12 @@
 				B3C9262319340283006A1020 /* TBEAppDelegate.h */,
 				B3C9262419340283006A1020 /* TBEAppDelegate.m */,
 				B3C9262619340283006A1020 /* MainMenu.xib */,
-				B3295C47193A4E7A00DA470E /* TBECharacterView.h */,
-				B3295C48193A4E7A00DA470E /* TBECharacterView.m */,
 				B34AF638193FE36D00DA19FA /* MyPlayground.playground */,
 				B34AF636193FDCB400DA19FA /* CharacterView.swift */,
-				B3295C44193A1E0900DA470E /* TBEImageView.h */,
-				B3295C45193A1E0900DA470E /* TBEImageView.m */,
-				B3FDE9311937C22A009CBE86 /* TBEUnicharTransformer.h */,
-				B3FDE9321937C22A009CBE86 /* TBEUnicharTransformer.m */,
-				B3C9264B19355259006A1020 /* TBEBoxes.h */,
-				B3C9264C19355259006A1020 /* TBEBoxes.m */,
-				B307F72B1941207100B951B6 /* Boxes.swift */,
 				B39693BC19424052004E13AA /* Box.swift */,
 				B39693BE19424084004E13AA /* BoxEditorViewController.swift */,
+				B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */,
 				B39693C01942A0F5004E13AA /* ImageView.swift */,
-				B3C9264819354C1A006A1020 /* TBEBox.h */,
-				B3C9264919354C1A006A1020 /* TBEBox.m */,
-				B3C9264519340430006A1020 /* TBEBoxEditorViewController.h */,
-				B3C9264619340430006A1020 /* TBEBoxEditorViewController.m */,
 				B3C9262919340283006A1020 /* Images.xcassets */,
 				B3C9261819340283006A1020 /* Supporting Files */,
 				B34AF635193FDCB400DA19FA /* Tesseract Box Editor-Bridging-Header.h */,
@@ -297,7 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B39693C11942A0F5004E13AA /* ImageView.swift in Sources */,
-				B307F72C1941207100B951B6 /* Boxes.swift in Sources */,
+				B35EB4A719450D7A0064A62A /* ImageViewWithSelectionRect.swift in Sources */,
 				B39693BF19424084004E13AA /* BoxEditorViewController.swift in Sources */,
 				B34AF637193FDCB400DA19FA /* CharacterView.swift in Sources */,
 				B39693BD19424052004E13AA /* Box.swift in Sources */,

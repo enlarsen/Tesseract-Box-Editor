@@ -36,7 +36,7 @@
                 <string>height</string>
             </declaredKeys>
             <connections>
-                <binding destination="bt5-4z-eBH" name="contentArray" keyPath="boxes.boxes" id="4Er-WE-CET"/>
+                <binding destination="bt5-4z-eBH" name="contentArray" keyPath="boxes" id="gb1-Ff-MPc"/>
             </connections>
         </arrayController>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">

@@ -9,7 +9,7 @@
 import Foundation
 import Cocoa
 
-class ImageView: NSImageView
+class ImageView: ImageViewWithSelectionRect
 {
     @IBOutlet var delegate: BoxEditorViewController
 
