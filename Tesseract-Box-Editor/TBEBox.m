@@ -67,6 +67,16 @@
     self.x2 = self.x + width;
 }
 
++ (NSRect)boxToNSRect:(TBEBox *)box
+{
+    return NSMakeRect((float)box.x, (float)box.y, (float)box.width, (float)box.height);
+}
+
+- (NSRect)boxToNSRect
+{
+    return NSMakeRect((float)self.x, (float)self.y, (float)self.width, (float)self.height);
+}
+
 - (NSString *)debugDescription
 {
     return [NSString stringWithFormat:@"<%@:%p%@>",

@@ -7,7 +7,9 @@
 //
 
 #import "TBEBoxes.h"
-#import "TBEBox.h"
+//#import "TBEBox.h"
+
+#import "TesseractBoxEditor-Swift.h"
 
 @interface TBEBoxes()
 
@@ -86,7 +88,7 @@
         int intValue;
 
         [scanner scanUpToString:@" " intoString:&characterAsString];
-        box.character = [characterAsString characterAtIndex:0];
+        box.character = characterAsString;
         scanner.charactersToBeSkipped = [NSCharacterSet whitespaceCharacterSet];
         [scanner scanInt:&intValue];
         box.x = intValue;

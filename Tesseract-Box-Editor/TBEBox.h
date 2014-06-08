@@ -21,4 +21,7 @@
 
 @property (nonatomic, strong) NSString *characterAsString;
 
++ (NSRect)boxToNSRect:(TBEBox *)box;
+- (NSRect)boxToNSRect;
+
 @end

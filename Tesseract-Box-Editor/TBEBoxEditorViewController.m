@@ -11,9 +11,11 @@
 #import "TBEAppDelegate.h"
 #import "TBEBoxEditorViewController.h"
 #import "TBEImageView.h"
-#import "TBEBoxView.h"
-#import "TBEBox.h"
+//#import "TBEBoxView.h"
+//#import "TBEBox.h"
 #import "TBECharacterView.h"
+
+#import "TesseractBoxEditor-Swift.h"
 
 @interface TBEBoxEditorViewController () <NSWindowDelegate>
 
@@ -465,7 +467,9 @@
     [image unlockFocus];
     NSImage *croppedImage = [[NSImage alloc] initWithData:[bitmapRep representationUsingType:NSPNGFileType properties:nil]];
 
-    [self.characterView updateCharacter:croppedImage withCropPoint:self.cropPoint];
+    [self.characterView updateCharacter:croppedImage
+                          withCropPoint:NSMakePoint(box.x - 5, box.y - 5)
+                       andCharacterRect:[box boxToNSRect]];
 }
 
 - (NSArray*)getRGBAsFromImage:(NSImage*)image atX:(NSUInteger)xx andY:(NSUInteger)yy count:(NSUInteger)count

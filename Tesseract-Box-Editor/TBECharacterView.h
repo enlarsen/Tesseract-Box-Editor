@@ -13,6 +13,6 @@
 @property (nonatomic) NSUInteger width;
 @property (nonatomic) NSUInteger height;
 
-- (void)updateCharacter:(NSImage *)image withCropPoint:(NSPoint)cropPoint;
+- (void)updateCharacter:(NSImage *)image withCropPoint:(NSPoint)cropPoint andCharacterRect:(NSRect)box;
 
 @end
