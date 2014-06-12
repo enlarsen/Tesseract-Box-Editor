@@ -18,15 +18,17 @@ class ImageViewWithSelectionRect: NSImageView
     var selectionHandleLayers: CAShapeLayer[] = []
     var drawSelectionHandles = false
 
-    var leftHandle = NSZeroPoint
-    var rightHandle = NSZeroPoint
-    var topHandle = NSZeroPoint
-    var bottomHandle = NSZeroPoint
+//    var leftHandle = NSZeroPoint
+//    var rightHandle = NSZeroPoint
+//    var topHandle = NSZeroPoint
+//    var bottomHandle = NSZeroPoint
 
     var selectionRect = NSZeroRect
     var strokeColor = NSColor.blackColor().CGColor
     var fillColor = NSColor.clearColor().CGColor
     var lineDashPattern = [10, 15]
+    var duration = 0.75
+    var numberHandles = 4
 
     init(frame frameRect: NSRect)
     {
@@ -45,16 +47,18 @@ class ImageViewWithSelectionRect: NSImageView
         selectionLayer.transform = createTransform(cropPoint)
 
         NSLog("Cropped point: \(cropPoint)")
-        computeHandles(rect)
 
         if drawSelectionHandles
         {
-            drawHandle(leftHandle)
-            drawHandle(rightHandle)
-            drawHandle(topHandle)
-            drawHandle(bottomHandle)
+            drawHandles(rect)
         }
 
+        drawSelectionRect(rect)
+        return
+    }
+
+    func drawSelectionRect(rect: NSRect)
+    {
         let path = CGPathCreateMutable()
 
         CGPathMoveToPoint(path, nil, rect.origin.x, rect.origin.y)
@@ -64,9 +68,8 @@ class ImageViewWithSelectionRect: NSImageView
         CGPathCloseSubpath(path)
 
         selectionLayer.path = path
-
-        return
     }
+
 
     func createAnimationLayer() -> CAShapeLayer
     {
@@ -85,7 +88,7 @@ class ImageViewWithSelectionRect: NSImageView
         let dashAnimation = CABasicAnimation(keyPath: "lineDashPhase")
         dashAnimation.fromValue = 0.0
         dashAnimation.toValue = 15.0
-        dashAnimation.duration = 0.75
+        dashAnimation.duration = duration
         dashAnimation.cumulative = true
         dashAnimation.repeatCount = 10000 /* HUGE_VALF undefined */
 
@@ -111,8 +114,7 @@ class ImageViewWithSelectionRect: NSImageView
             let width = image.size.width * scaleFactor
             horizontalPadding = (frame.size.width - width) / 2.0
         }
-
-        if horizontalScaleFactor - verticalScaleFactor < 0
+        else
         {
             scaleFactor = horizontalScaleFactor
 
@@ -128,44 +130,42 @@ class ImageViewWithSelectionRect: NSImageView
         transform = CATransform3DTranslate(transform, -cropPoint.x, -cropPoint.y, 0.0)
 
         NSLog("Transformation: \(transform.m11) \(transform.m22) \(transform.m41) \(transform.m42)")
-        NSLog("Left handle transformed: %@", NSStringFromPoint(CGPointApplyAffineTransform(leftHandle, CATransform3DGetAffineTransform(transform))))
 
         return transform
     }
 
-    func computeHandles(rect: NSRect)
+    func drawHandles(rect: NSRect)
     {
+        var handles: NSPoint[] = []
+
+
         let left = CGFloat(rect.origin.x)
         let bottom = CGFloat(rect.origin.y)
         let right = CGFloat(rect.origin.x + rect.size.width)
         let top = CGFloat(rect.origin.y + rect.size.height)
 
 
-        leftHandle = NSPoint(x: left, y: bottom + (top - bottom) / 2.0)
-        rightHandle = NSPoint(x: right, y: bottom + (top - bottom) / 2.0)
-        topHandle = NSPoint(x: left + (right - left) / 2.0, y: top)
-        bottomHandle = NSPoint(x: (left + (right - left) / 2.0), y: bottom)
+        handles += NSPoint(x: left, y: bottom + (top - bottom) / 2.0)  // left
+        handles += NSPoint(x: right, y: bottom + (top - bottom) / 2.0) // right
+        handles += NSPoint(x: left + (right - left) / 2.0, y: top) // top
+        handles += NSPoint(x: (left + (right - left) / 2.0), y: bottom) // bottom
 
-        NSLog("Left handle: \(leftHandle)")
-        NSLog("Right handle: \(rightHandle)")
-        NSLog("Top handle: \(topHandle)")
-        NSLog("Bottom Handle: \(bottomHandle)")
+        if selectionHandleLayers.count == 0
+        {
+            setupSelectionHandleLayers()
+        }
         
+        for var i = 0; i < handles.count; i++
+        {
+            drawHandle(handles[i], layer: selectionHandleLayers[i])
+        }
 
     }
 
-    func drawHandle(point: NSPoint)
+    func drawHandle(point: NSPoint, layer: CAShapeLayer)
     {
         let size = 0.5
         let path = CGPathCreateMutable()
-
-        let layer = CAShapeLayer()
-        layer.lineWidth = 0.1
-        layer.strokeColor = NSColor.blueColor().CGColor
-        layer.fillColor = NSColor.blueColor().CGColor
-        layer.transform = selectionLayer.transform
-
-        layer.addSublayer(layer)
 
         CGPathMoveToPoint(path, nil, point.x - size, point.y - size)
         CGPathAddLineToPoint(path, nil, point.x - size, point.y + size)
@@ -175,8 +175,23 @@ class ImageViewWithSelectionRect: NSImageView
 
         layer.path = path
 
-        selectionHandleLayers += layer
-        return
+    }
+
+    func setupSelectionHandleLayers()
+    {
+        for var i = 0; i < numberHandles; i++
+        {
+            let layer = CAShapeLayer()
+            layer.lineWidth = 0.1
+            layer.strokeColor = NSColor.blueColor().CGColor
+            layer.fillColor = NSColor.blueColor().CGColor
+            layer.transform = selectionLayer.transform
+
+            selectionHandleLayers += layer
+            self.layer.addSublayer(layer)
+
+
+        }
     }
 
     func removeAnimatedSelection()
@@ -189,6 +204,27 @@ class ImageViewWithSelectionRect: NSImageView
         
         selectionHandleLayers.removeAll(keepCapacity: true)
         selectionLayer = nil
-        
+    }
+
+    func computeResizedSelectionRectangle(index: Int, dragPoint: NSPoint) -> NSRect
+    {
+        var left = selectionRect.origin.x
+        var right = selectionRect.origin.x + selectionRect.size.width
+        var top = selectionRect.origin.y + selectionRect.size.height
+        var bottom = selectionRect.origin.y
+
+        switch index
+        {
+            case 0:
+                left = dragPoint.x
+            case 1:
+                right = dragPoint.x
+            case 2:
+                top = dragPoint.y
+            default:
+                bottom = dragPoint.y
+        }
+
+        return NSRect(x: left, y: bottom, width: right - left, height: top - bottom)
     }
 }

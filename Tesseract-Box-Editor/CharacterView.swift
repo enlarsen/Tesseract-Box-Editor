@@ -14,15 +14,23 @@ class CharacterView: ImageViewWithSelectionRect
 
     var width: CGFloat = 0.0
     var height:CGFloat = 0.0
-    var startPoint = CGPointZero
-    var cropPoint = CGPointZero
+    var startPointIndex = -1
+    var cropPoint = NSZeroPoint
     var scaleFactor = 1.0
-    var box: NSRect?
 
+    init(frame frameRect: NSRect)
+    {
+        super.init(frame: frameRect)
+        strokeColor = NSColor.grayColor().CGColor
+        fillColor = NSColor.clearColor().CGColor
+        lineDashPattern = [1, 1]
+        duration = 10.0
+    }
 
     override func awakeFromNib()
     {
         imageScaling = .ImageScaleProportionallyUpOrDown
+        drawSelectionHandles = true
 
     }
 
@@ -32,9 +40,9 @@ class CharacterView: ImageViewWithSelectionRect
 
         self.cropPoint = cropPoint
 
-        self.box = box
+        self.selectionRect = box
         removeAnimatedSelection()
-        setupAnimatedSelectionRect(self.box!, cropPoint: cropPoint)
+        setupAnimatedSelectionRect(self.selectionRect, cropPoint: cropPoint)
 
         NSLog("image size: %@", NSStringFromSize(image.size));
         NSLog("characterView frame: %@", NSStringFromRect(self.frame));
@@ -50,11 +58,11 @@ class CharacterView: ImageViewWithSelectionRect
         let point = convertPoint(theEvent.locationInWindow, fromView: nil)
         var transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
 
-        for layer in selectionHandleLayers
+        for var i = 0; i < selectionHandleLayers.count; i++
         {
-            if CGPathContainsPoint(layer.path, &transform, point, false)
+            if CGPathContainsPoint(selectionHandleLayers[i].path, &transform, point, false)
             {
-                self.startPoint = CGPointApplyAffineTransform(point, transform)
+                self.startPointIndex = i
             }
 
         }
@@ -62,22 +70,22 @@ class CharacterView: ImageViewWithSelectionRect
 
     override func mouseUp(theEvent: NSEvent!)
     {
-        startPoint = CGPointZero
+        startPointIndex = -1
     }
 
     override func mouseDragged(theEvent: NSEvent!)
     {
-        let point = convertPoint(theEvent.locationInWindow, fromView: nil)
+        var point = convertPoint(theEvent.locationInWindow, fromView: nil)
         var transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
-
-        for layer in selectionHandleLayers
-        {
-            if CGPathContainsPoint(layer.path, &transform, point, false)
-            {
-                NSLog("Found handle")
-            }
-
-        }
+        point = CGPointApplyAffineTransform(point, transform)
+        
+        let newRect = computeResizedSelectionRectangle(self.startPointIndex, dragPoint: point)
+        NSLog("newRect: \(newRect)")
+        drawSelectionRect(newRect)
+        drawHandles(newRect)
+        
+        selectionRect = newRect
+        
 
     }
 

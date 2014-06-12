@@ -11,7 +11,11 @@ import Cocoa
 
 class ImageView: ImageViewWithSelectionRect
 {
-    @IBOutlet var delegate: BoxEditorViewController
 
+    init(frame frameRect: NSRect)
+    {
+        super.init(frame: frameRect)
+        self.fillColor = NSColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 0.5).CGColor
+    }
     
 }
