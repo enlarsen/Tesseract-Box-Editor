@@ -38,7 +38,8 @@
 /* Begin PBXFileReference section */
 		B34AF635193FDCB400DA19FA /* Tesseract Box Editor-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tesseract Box Editor-Bridging-Header.h"; sourceTree = "<group>"; };
 		B34AF636193FDCB400DA19FA /* CharacterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterView.swift; sourceTree = "<group>"; };
-		B34AF638193FE36D00DA19FA /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		B350FE13195364C800124CA9 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = SOURCE_ROOT; };
+		B350FE141953680400124CA9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
 		B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewWithSelectionRect.swift; sourceTree = "<group>"; };
 		B39693BC19424052004E13AA /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		B39693BE19424084004E13AA /* BoxEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxEditorViewController.swift; sourceTree = "<group>"; };
@@ -130,7 +131,6 @@
 				B3C9262319340283006A1020 /* TBEAppDelegate.h */,
 				B3C9262419340283006A1020 /* TBEAppDelegate.m */,
 				B3C9262619340283006A1020 /* MainMenu.xib */,
-				B34AF638193FE36D00DA19FA /* MyPlayground.playground */,
 				B34AF636193FDCB400DA19FA /* CharacterView.swift */,
 				B39693BC19424052004E13AA /* Box.swift */,
 				B39693BE19424084004E13AA /* BoxEditorViewController.swift */,
@@ -139,6 +139,8 @@
 				B3C9262919340283006A1020 /* Images.xcassets */,
 				B3C9261819340283006A1020 /* Supporting Files */,
 				B34AF635193FDCB400DA19FA /* Tesseract Box Editor-Bridging-Header.h */,
+				B350FE13195364C800124CA9 /* readme.md */,
+				B350FE141953680400124CA9 /* LICENSE */,
 			);
 			path = "Tesseract-Box-Editor";
 			sourceTree = "<group>";

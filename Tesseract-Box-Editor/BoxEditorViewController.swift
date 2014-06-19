@@ -5,6 +5,26 @@
 //  Created by Erik Larsen on 6/6/14.
 //  Copyright (c) 2014 Erik Larsen. All rights reserved.
 //
+//  MIT LICENSE
+//
+//  Permission is hereby granted, free of charge, to any person obtaining
+//  a copy of this software and associated documentation files (the
+//  "Software"), to deal in the Software without restriction, including
+//  without limitation the rights to use, copy, modify, merge, publish,
+//  distribute, sublicense, and/or sell copies of the Software, and to
+//  permit persons to whom the Software is furnished to do so, subject to
+//  the following conditions:
+//
+//  The above copyright notice and this permission notice shall be
+//  included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+//  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+//  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+//  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+//  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
 import Cocoa
@@ -161,11 +181,11 @@ class BoxEditorViewController: NSViewController
 
         // Flip the coordinates to be Mac coordinates and add a border around the cropped image
         let cropRect = NSRect(x: left - 5, y: Int(height) - bottom - 6, width: right - left + 10, height: bottom - top + 10)
-        let target = NSImage(size: cropRect.size)
-        target.lockFocus()
-
-        image.drawInRect(NSRect(x: 0, y: 0, width: cropRect.size.width, height: cropRect.size.height), fromRect: cropRect, operation: .CompositeCopy, fraction: 1.0)
-        target.unlockFocus()
+//        let target = NSImage(size: cropRect.size)
+//        target.lockFocus()
+//
+//        image.drawInRect(NSRect(x: 0, y: 0, width: cropRect.size.width, height: cropRect.size.height), fromRect: cropRect, operation: .CompositeCopy, fraction: 1.0)
+//        target.unlockFocus()
 
         free(rawData)
 
@@ -175,7 +195,7 @@ class BoxEditorViewController: NSViewController
 
 
         let croppedImage = NSImage(data: bitmapRep.representationUsingType(.NSPNGFileType, properties: nil))
-        cropPoint = NSPoint(x: left - 5, y: Int(height) - bottom - 6)
+        cropPoint = cropRect.origin
         return croppedImage
 
 
@@ -214,7 +234,7 @@ class BoxEditorViewController: NSViewController
         image.unlockFocus()
 
         let croppedImage = NSImage(data: bitmapRep.representationUsingType(.NSPNGFileType, properties: nil))
-        characterView.updateCharacter(croppedImage, withCropPoint: NSPoint(x: box.x - 5, y: box.y - 5), andCharacterRect: box.boxToNSRect())
+        characterView.updateCharacter(croppedImage, cropPoint: NSPoint(x: box.x - 5, y: box.y - 5), rect: box.boxToNSRect())
     }
     
     // TODO: This needs vastly improved error handling and value checking
@@ -251,6 +271,34 @@ class BoxEditorViewController: NSViewController
 
     }
 
+    func saveBoxFile(path: String)
+    {
+        var output = ""
+
+        let outputPath = path.stringByAppendingPathExtension("tmp")
+
+        for box in boxes
+        {
+            output = output.stringByAppendingString(box.formatForWriting())
+        }
+
+        output.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+        NSFileManager.defaultManager().moveItemAtPath(path, toPath: path.stringByAppendingPathExtension(".old"), error: nil)
+        NSFileManager.defaultManager().moveItemAtPath(outputPath, toPath: path, error: nil)
+        NSFileManager.defaultManager().removeFileAtPath(path.stringByAppendingPathExtension(".old"), handler: nil)
+
+    }
+
+    func mergeCharacters()
+    {
+
+    }
+
+    func splitCharacters()
+    {
+
+    }
+
     func getNextIntValue(scanner: NSScanner) -> Int
     {
         var intValue: CInt = 0
@@ -259,9 +307,6 @@ class BoxEditorViewController: NSViewController
         return Int(intValue)
     }
     
-    func writeBoxFile(path: String)
-    {
-        
-    }
 
 }
+
