@@ -112,6 +112,11 @@ class CharacterView: ImageViewWithSelectionRect
     override func mouseUp(theEvent: NSEvent!)
     {
         startPointIndex = -1
+
+        if delegate
+        {
+            delegate!.doneDragging()
+        }
     }
 
     override func mouseDragged(theEvent: NSEvent!)

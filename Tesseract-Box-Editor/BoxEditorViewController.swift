@@ -33,6 +33,7 @@ import QuartzCore
 protocol BoxResizeDelegate
 {
     func boxDidResize(rect: NSRect)
+    func doneDragging()
 }
 
 class BoxEditorViewController: NSViewController, BoxResizeDelegate
@@ -103,6 +104,14 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         box.y = Int(rect.origin.y)
         box.width = Int(rect.size.width)
         box.height = Int(rect.size.height)
+    }
+
+    func doneDragging()
+    {
+        let box = tableArrayController.selectedObjects[0] as Box
+        updateCharacterView(box)
+        mainImageView.removeAnimatedSelection()
+        mainImageView.setupAnimatedSelectionRect(box.boxToNSRect(), cropPoint: cropPoint)
     }
 
     @IBAction func openMenu(sender: NSMenuItem)
@@ -266,7 +275,13 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
     // TODO: This needs vastly improved error handling and value checking
     func parseBoxFile(path: String)
     {
-        let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: nil)
+        var error: NSError? = nil
+        let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: &error)
+
+        if let mError = error
+        {
+            NSLog("Error: \(mError.localizedDescription)")
+        }
 
         fileText.enumerateLinesUsingBlock({line, stop in
             var box = Box()
@@ -300,6 +315,7 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
     func saveBoxFile(path: String)
     {
         var output = ""
+        var error: NSError? = nil;
 
         let outputPath = path.stringByAppendingPathExtension("tmp")
 
@@ -308,10 +324,27 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
             output = output.stringByAppendingString(box.formatForWriting())
         }
 
-        output.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
-        NSFileManager.defaultManager().moveItemAtPath(path, toPath: path.stringByAppendingPathExtension(".old"), error: nil)
-        NSFileManager.defaultManager().moveItemAtPath(outputPath, toPath: path, error: nil)
-        NSFileManager.defaultManager().removeFileAtPath(path.stringByAppendingPathExtension(".old"), handler: nil)
+        output.writeToFile(outputPath, atomically: true, encoding: NSUTF8StringEncoding, error: &error)
+        if let uwError = error
+        {
+            NSLog("writeToFile error: \(uwError.localizedDescription)")
+            return;
+        }
+        NSFileManager.defaultManager().moveItemAtPath(path, toPath: path.stringByAppendingPathExtension("old"), error: &error)
+        if let uwError = error
+        {
+            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
+            return;
+        }
+        NSFileManager.defaultManager().moveItemAtPath(outputPath, toPath: path, error: &error)
+        if let uwError = error
+        {
+            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
+            return;
+        }
+        NSFileManager.defaultManager().removeFileAtPath(path.stringByAppendingPathExtension("old"), handler: nil)
+
+        window.documentEdited = false
 
     }
 

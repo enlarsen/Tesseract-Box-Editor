@@ -228,21 +228,21 @@ class ImageViewWithSelectionRect: NSImageView
 
     func computeResizedSelectionRectangle(index: Int, dragPoint: NSPoint) -> NSRect
     {
-        var left = selectionRect.origin.x
-        var right = selectionRect.origin.x + selectionRect.size.width
-        var top = selectionRect.origin.y + selectionRect.size.height
-        var bottom = selectionRect.origin.y
+        var left = Int(selectionRect.origin.x)
+        var right = Int(selectionRect.origin.x + selectionRect.size.width)
+        var top = Int(selectionRect.origin.y + selectionRect.size.height)
+        var bottom = Int(selectionRect.origin.y)
 
         switch index
         {
             case 0:
-                left = dragPoint.x
+                left = Int(dragPoint.x)
             case 1:
-                right = dragPoint.x
+                right = Int(dragPoint.x)
             case 2:
-                top = dragPoint.y
+                top = Int(dragPoint.y)
             default:
-                bottom = dragPoint.y
+                bottom = Int(dragPoint.y)
         }
 
         return NSRect(x: left, y: bottom, width: right - left, height: top - bottom)
