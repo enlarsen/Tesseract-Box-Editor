@@ -122,6 +122,7 @@
                             <menuItem title="Save…" keyEquivalent="s" id="pxx-59-PXV">
                                 <connections>
                                     <action selector="saveMenu:" target="bt5-4z-eBH" id="ohs-X4-TFb"/>
+                                    <binding destination="bt5-4z-eBH" name="enabled" keyPath="window.documentEdited" id="Mku-6C-592"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Save As…" keyEquivalent="S" id="Bw7-FT-i3A">

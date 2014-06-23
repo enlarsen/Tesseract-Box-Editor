@@ -49,14 +49,10 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
     var currentFileUrl: NSURL?
 
     var cropPoint = CGPointZero
-//    var topHandle = CGPointZero
-//    var bottomHandle = CGPointZero
-//    var leftHandle = CGPointZero
-//    var rightHandle = CGPointZero
     var observing = false
 
     var pagesFromImage: NSBitmapImageRep[] = []
-    var currentRepresentation: Int?
+    var currentTiffPage: Int?
 
     var boxes: Box[] = []
 
@@ -73,15 +69,15 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         if tableArrayController.selectedObjects.count > 0
         {
             let box = tableArrayController.selectedObjects[0] as Box
-            if box.page != currentRepresentation
+            if box.page != currentTiffPage
             {
-                if currentRepresentation < pagesFromImage.count
+                if currentTiffPage < pagesFromImage.count
                 {
                     var size = pagesFromImage[box.page].size
                     var image = NSImage(size:size)
                     image.addRepresentation(pagesFromImage[box.page])
                     mainImageView.image = trimImage(image)
-                    currentRepresentation = box.page
+                    currentTiffPage = box.page
 
                 }
             }
@@ -118,7 +114,7 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
     {
 
         let openPanel = NSOpenPanel()
-        openPanel.allowedFileTypes = ["tiff", "tif", "TIFF", "TIF", "jpg", "jpeg", "JPG", "JPEG"]
+        openPanel.allowedFileTypes = ["box", "BOX"]
         openPanel.canSelectHiddenExtension = true
         if observing
         {
@@ -128,17 +124,19 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         openPanel.beginSheetModalForWindow(window, completionHandler: {result in
             if result == NSFileHandlingPanelOKButton
             {
-                let url = openPanel.URL
-                let boxUrl = url.URLByDeletingPathExtension.URLByAppendingPathExtension("box")
-                let imageFromFile = NSImage(byReferencingURL: url)
+                let boxUrl = openPanel.URL
+                let tiffUrl = boxUrl.URLByDeletingPathExtension.URLByAppendingPathExtension("tif")
+                let imageFromFile = NSImage(byReferencingURL: tiffUrl)
                 self.pagesFromImage = imageFromFile.representations as NSBitmapImageRep[]
                 self.mainImageView.image = self.trimImage(imageFromFile)
                 self.parseBoxFile(boxUrl.path)
-                self.currentRepresentation = 0
+                self.currentTiffPage = 0
 
                 self.tableArrayController.addObserver(self, forKeyPath: "selection", options: nil, context: nil)
                 self.observing = true
                 self.currentFileUrl = boxUrl
+                self.tableArrayController.setSelectionIndex(1)
+                self.tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display
 
             }
         })
@@ -276,6 +274,7 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
     func parseBoxFile(path: String)
     {
         var error: NSError? = nil
+        var boxes: Box[] = []
         let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: &error)
 
         if let mError = error
@@ -306,9 +305,9 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
             box.x2 = self.getNextIntValue(scanner)
             box.y2 = self.getNextIntValue(scanner)
             box.page = self.getNextIntValue(scanner)
-            self.boxes.append(box)
+            boxes.append(box)
             })
-
+        self.boxes = boxes
 
     }
 
