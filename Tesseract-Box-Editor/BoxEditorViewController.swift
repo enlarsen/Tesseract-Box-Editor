@@ -30,7 +30,12 @@ import Foundation
 import Cocoa
 import QuartzCore
 
-class BoxEditorViewController: NSViewController
+protocol BoxResizeDelegate
+{
+    func boxDidResize(rect: NSRect)
+}
+
+class BoxEditorViewController: NSViewController, BoxResizeDelegate
 {
     @IBOutlet var characterView: CharacterView
     @IBOutlet var mainImageView: ImageView
@@ -40,6 +45,7 @@ class BoxEditorViewController: NSViewController
 
     var selectionLayer: CAShapeLayer!
     var selectionHandleLayers: CAShapeLayer[] = []
+    var currentFileUrl: NSURL?
 
     var cropPoint = CGPointZero
 //    var topHandle = CGPointZero
@@ -56,6 +62,7 @@ class BoxEditorViewController: NSViewController
     override func awakeFromNib()
     {
         mainImageView.imageScaling = .ImageScaleProportionallyUpOrDown
+        characterView.delegate = self
 
     }
 
@@ -87,7 +94,16 @@ class BoxEditorViewController: NSViewController
         }
     }
 
- 
+    // Someday do everything as straight up bindings.
+    // Problems with direct binding: need image and crop as well as the box down in the CharacterView
+    func boxDidResize(rect: NSRect)
+    {
+        var box = tableArrayController.selectedObjects[0] as Box
+        box.x = Int(rect.origin.x)
+        box.y = Int(rect.origin.y)
+        box.width = Int(rect.size.width)
+        box.height = Int(rect.size.height)
+    }
 
     @IBAction func openMenu(sender: NSMenuItem)
     {
@@ -113,11 +129,21 @@ class BoxEditorViewController: NSViewController
 
                 self.tableArrayController.addObserver(self, forKeyPath: "selection", options: nil, context: nil)
                 self.observing = true
+                self.currentFileUrl = boxUrl
 
             }
         })
 
     }
+
+    @IBAction func saveMenu(sender: NSMenuItem)
+    {
+        if currentFileUrl
+        {
+            saveBoxFile(currentFileUrl!.path)
+        }
+    }
+
 
     // Coordinates are inverted in this function. (0, 0) is the upper left and y increases down
     func trimImage(image: NSImage) -> NSImage
@@ -236,7 +262,7 @@ class BoxEditorViewController: NSViewController
         let croppedImage = NSImage(data: bitmapRep.representationUsingType(.NSPNGFileType, properties: nil))
         characterView.updateCharacter(croppedImage, cropPoint: NSPoint(x: box.x - 5, y: box.y - 5), rect: box.boxToNSRect())
     }
-    
+
     // TODO: This needs vastly improved error handling and value checking
     func parseBoxFile(path: String)
     {

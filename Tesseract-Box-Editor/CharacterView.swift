@@ -37,6 +37,7 @@ class CharacterView: ImageViewWithSelectionRect
     var startPointIndex = -1
     var cropPoint = NSZeroPoint
     var scaleFactor = 1.0
+    var delegate: BoxResizeDelegate? = nil
 
     init(frame frameRect: NSRect)
     {
@@ -51,6 +52,23 @@ class CharacterView: ImageViewWithSelectionRect
     {
         imageScaling = .ImageScaleProportionallyUpOrDown
         drawSelectionHandles = true
+
+    }
+
+
+    func propagateValue(id: AnyObject, binding:NSString)
+    {
+        if let bindingInfo = self.infoForBinding(binding)
+        {
+            if let bindingOptions : AnyObject = bindingInfo[NSOptionsKey]
+            {
+                let transformer: NSValueTransformer = bindingOptions[NSValueTransformerBindingOption] as NSValueTransformer
+            }
+        }
+        else
+        {
+            return
+        }
 
     }
 
@@ -108,7 +126,11 @@ class CharacterView: ImageViewWithSelectionRect
         drawHandles(newRect)
         
         selectionRect = newRect
-        
+        window.documentEdited = true
+        if delegate
+        {
+            delegate!.boxDidResize(newRect)
+        }
 
     }
 
