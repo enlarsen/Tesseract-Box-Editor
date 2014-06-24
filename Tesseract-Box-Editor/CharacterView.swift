@@ -105,6 +105,10 @@ class CharacterView: ImageViewWithSelectionRect
             }
 
         }
+        if delegate
+        {
+            delegate!.beganDragging()
+        }
 
         // TODO: also check whether the click was within the selection rectangle in prep for a move
     }

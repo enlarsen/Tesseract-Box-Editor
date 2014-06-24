@@ -34,6 +34,7 @@ protocol BoxResizeDelegate
 {
     func boxDidResize(rect: NSRect)
     func doneDragging()
+    func beganDragging()
 }
 
 class BoxEditorViewController: NSViewController, BoxResizeDelegate
@@ -60,7 +61,6 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
     {
         mainImageView.imageScaling = .ImageScaleProportionallyUpOrDown
         characterView.delegate = self
-
     }
 
 
@@ -81,9 +81,7 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
 
                 }
             }
-        updateCharacterView(box)
-        mainImageView.removeAnimatedSelection()
-        mainImageView.setupAnimatedSelectionRect(box.boxToNSRect(), cropPoint: cropPoint)
+            updateSelectedCharacterDisplays()
         }
         else
         {
@@ -91,32 +89,63 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         }
     }
 
-    // Someday do everything as straight up bindings.
-    // Problems with direct binding: need image and crop as well as the box down in the CharacterView
-    func boxDidResize(rect: NSRect)
-    {
-        var box = tableArrayController.selectedObjects[0] as Box
-        box.x = Int(rect.origin.x)
-        box.y = Int(rect.origin.y)
-        box.width = Int(rect.size.width)
-        box.height = Int(rect.size.height)
-    }
-
-    func doneDragging()
+    func updateSelectedCharacterDisplays()
     {
         let box = tableArrayController.selectedObjects[0] as Box
         updateCharacterView(box)
         mainImageView.removeAnimatedSelection()
         mainImageView.setupAnimatedSelectionRect(box.boxToNSRect(), cropPoint: cropPoint)
+
+    }
+
+    // Someday do everything as straight up bindings.
+    // Problems with direct binding: need image and crop as well as the box down in the CharacterView
+    func resizeBox(rect: NSRect, index: Int)
+    {
+        var box = boxes[index]
+        box.x = Int(rect.origin.x)
+        box.y = Int(rect.origin.y)
+        box.width = Int(rect.size.width)
+        box.height = Int(rect.size.height)
+        if self.window.undoManager.undoing && index == tableArrayController.selectionIndex
+        {
+            updateSelectedCharacterDisplays()
+        }
+    }
+
+    func boxDidResize(rect: NSRect)
+    {
+        let selectionIndex = tableArrayController.selectionIndex
+        resizeBox(rect, index: selectionIndex)
+    }
+
+    func beganDragging()
+    {
+        let box = tableArrayController.selectedObjects[0] as Box
+        let selectionIndex = tableArrayController.selectionIndex
+        let currentRect = box.boxToNSRect()
+        let undo = self.window.undoManager
+
+        self.window.undoManager.prepareWithInvocationTarget(self).resizeBox(currentRect, index: selectionIndex)
+        if !self.window.undoManager.undoing
+        {
+            self.window.undoManager.setActionName("Resize Box")
+        }
+
+    }
+
+    func doneDragging()
+    {
+        updateSelectedCharacterDisplays()
     }
 
     func insertBox(box: Box, index: Int)
     {
-        self.undoManager.prepareWithInvocationTarget(self).removeBox(index)
+        self.window.undoManager.prepareWithInvocationTarget(self).removeBox(index)
 
-        if !self.undoManager.undoing
+        if !self.window.undoManager.undoing
         {
-            self.undoManager.setActionName("Insert Box")
+            self.window.undoManager.setActionName("Insert Box")
         }
         boxes.insert(box, atIndex: index)
     }
@@ -124,11 +153,11 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
     func removeBox(index: Int)
     {
         let box = boxes[index]
-        self.undoManager.prepareWithInvocationTarget(self).insertBox(box, index: index)
+        self.window.undoManager.prepareWithInvocationTarget(self).insertBox(box, index: index)
 
-        if !self.undoManager.undoing
+        if !self.window.undoManager.undoing
         {
-            self.undoManager.setActionName("Delete Box")
+            self.window.undoManager.setActionName("Delete Box")
         }
         boxes.removeAtIndex(index)
 
@@ -399,6 +428,7 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         return Int(intValue)
     }
     
+
 
 }
 
