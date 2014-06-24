@@ -110,6 +110,40 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         mainImageView.setupAnimatedSelectionRect(box.boxToNSRect(), cropPoint: cropPoint)
     }
 
+    func insertBox(box: Box, index: Int)
+    {
+        self.undoManager.prepareWithInvocationTarget(self).removeBox(index)
+
+        if !self.undoManager.undoing
+        {
+            self.undoManager.setActionName("Insert Box")
+        }
+        boxes.insert(box, atIndex: index)
+    }
+
+    func removeBox(index: Int)
+    {
+        let box = boxes[index]
+        self.undoManager.prepareWithInvocationTarget(self).insertBox(box, index: index)
+
+        if !self.undoManager.undoing
+        {
+            self.undoManager.setActionName("Delete Box")
+        }
+        boxes.removeAtIndex(index)
+
+    }
+
+    func mergeBoxes(index: Int)
+    {
+
+    }
+
+    func splitBoxes(index: Int)
+    {
+        
+    }
+
     @IBAction func openMenu(sender: NSMenuItem)
     {
 
