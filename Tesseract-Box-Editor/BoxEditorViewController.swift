@@ -44,6 +44,7 @@ class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDele
     @IBOutlet var window: NSWindow
     @IBOutlet var boxesTableView: NSTableView
     @IBOutlet var tableArrayController: NSArrayController
+    @IBOutlet var tableView: NSTableView
 
     var selectionLayer: CAShapeLayer!
     var selectionHandleLayers: CAShapeLayer[] = []
@@ -53,9 +54,66 @@ class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDele
     var observing = false
 
     var pagesFromImage: NSBitmapImageRep[] = []
-    var currentTiffPage: Int?
+    var currentTiffPage: Int = -1
+    {
+        willSet
+        {
+            self.willChangeValueForKey("isThereAPreviousPage")
+            self.willChangeValueForKey("isThereANextPage")
+        }
+        didSet
+        {
+            self.didChangeValueForKey("isThereAPreviousPage")
+            self.didChangeValueForKey("isThereANextPage")
+        }
+    }
 
     var boxes: Box[] = []
+    var pageIndex = Dictionary<Int, Int>()
+
+    var isThereAPreviousPage: Bool
+    {
+        get
+        {
+            if currentTiffPage - 1 < 0
+            {
+                return false
+            }
+            else
+            {
+                return true
+            }
+        }
+    }
+
+    var isThereANextPage: Bool
+    {
+        get
+        {
+            if currentTiffPage + 1 >= pagesFromImage.count
+            {
+                return false
+            }
+            else
+            {
+                return true
+            }
+        }
+    }
+
+    override class func automaticallyNotifiesObserversForKey(key: String) -> Bool
+    {
+
+        if key == "isThereAPreviousPage" || key == "isThereANextPage"
+        {
+            return false
+        }
+        else
+        {
+            return true
+        }
+
+    }
 
     override func awakeFromNib()
     {
@@ -63,7 +121,7 @@ class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDele
         characterView.delegate = self
 
         self.window.nextResponder = self;
-    }
+     }
 
 
     override func observeValueForKeyPath(keyPath: String!, ofObject object: AnyObject!, change: NSDictionary!, context: CMutableVoidPointer)
@@ -90,6 +148,7 @@ class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDele
             mainImageView.removeAnimatedSelection()
         }
     }
+
 
     func updateSelectedCharacterDisplays()
     {
@@ -203,6 +262,7 @@ class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDele
             // have to test whether the character is at the end of the line and do something reasonable then.
             firstBox.width += secondBox.width
             removeBox(index + 1)
+            createPageIndex()
         }
         else
         {
@@ -213,29 +273,97 @@ class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDele
 
     func splitBoxes(index: Int)
     {
+        let box = boxes[index]
+
+        self.window.undoManager.beginUndoGrouping()
+
+        self.window.undoManager.prepareWithInvocationTarget(self).removeBox(index + 1)
+        self.window.undoManager.prepareWithInvocationTarget(self).resizeBox(box.boxToNSRect(), index:index)
+
+        if !self.window.undoManager.undoing
+        {
+            self.window.undoManager.setActionName("Split Box")
+        }
+        self.window.undoManager.endUndoGrouping()
+
+        let newBox = Box()
+        newBox.page = box.page
+        newBox.character = "?"
+        newBox.y = box.y
+        newBox.y2 = box.y2
+        newBox.x = Int(box.x + (box.width / 2))
+        newBox.x2 = box.x2
+        box.x2 = newBox.x - 2
+
+        boxes.insert(newBox, atIndex: index + 1)
+
+        createPageIndex()
         
     }
 
     @IBAction func mergeToolbarItem(sender: NSToolbarItem)
     {
 
+        mergeBoxes(tableArrayController.selectionIndex)
     }
 
     @IBAction func splitToolbarItem(sender: NSToolbarItem)
     {
-
+        splitBoxes(tableArrayController.selectionIndex)
     }
 
-    @IBAction func deleteToolbarItem(sender: NSToolbarItem)
+    func deleteToolbarItem(sender: NSToolbarItem)
     {
-
+        removeBox(tableArrayController.selectionIndex)
     }
 
-    @IBAction func insertToolbarItem(sender: NSToolbarItem)
+    func insertToolbarItem(sender: NSToolbarItem)
     {
+        let index = tableArrayController.selectionIndex
+
+        let selectedBox = boxes[index]
+
+        var box = Box()
+        box.x = selectedBox.x - selectedBox.width
+        box.y = selectedBox.y
+        box.width = selectedBox.width
+        box.height = selectedBox.height
+        box.character = "?"
+        box.page = selectedBox.page
+
+        insertBox(box, index: index)
+    }
+
+    // The KVO will see the change in selection and update the image view
+    @IBAction func previousPage(sender: NSButton)
+    {
+        var index = currentTiffPage - 1
+        if index < 0
+        {
+            return
+        }
+        var row = pageIndex[index]
+        tableArrayController.setSelectionIndex(row!)
+        updateSelectedCharacterDisplays()
+        tableView.scrollRowToVisible(row!)
+
 
     }
     
+    @IBAction func nextPage(sender: NSButton)
+    {
+        var index = currentTiffPage + 1
+        if index >= boxes.count
+        {
+            return
+        }
+        var row = pageIndex[index]
+        tableArrayController.setSelectionIndex(row!)
+        updateSelectedCharacterDisplays()
+        tableView.scrollRowToVisible(row!)
+
+    }
+
     @IBAction func openMenu(sender: NSMenuItem)
     {
 
@@ -264,6 +392,7 @@ class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDele
                 self.tableArrayController.setSelectionIndex(1)
                 self.tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display
                 self.window.title = boxUrl.path.lastPathComponent
+                self.createPageIndex()
             }
         })
 
@@ -480,6 +609,22 @@ class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDele
         
         scanner.scanInt(&intValue)
         return Int(intValue)
+    }
+
+    func createPageIndex()
+    {
+        pageIndex.removeAll(keepCapacity: true)
+        var current = -1
+
+        for var i = 0; i < boxes.count; i++
+        {
+            if current != boxes[i].page
+            {
+                current = boxes[i].page
+                pageIndex[current] = i
+            }
+        }
+
     }
 
     func windowDidResize(notification: NSNotification!)
