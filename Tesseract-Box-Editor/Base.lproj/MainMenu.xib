@@ -993,11 +993,32 @@
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="6d4-X7-jzM"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="neb-CP-57b"/>
-                    <toolbarItem implicitItemIdentifier="F55344B2-7884-4339-A363-A88C0F64913B" label="Merge" paletteLabel="Merge" tag="-1" id="TJh-Yk-6eZ"/>
-                    <toolbarItem implicitItemIdentifier="2DA2CFF1-43D8-48F7-A2E3-54148622F1C9" label="Split" paletteLabel="Split" tag="-1" id="lE8-xv-yJd"/>
-                    <toolbarItem implicitItemIdentifier="E228FAB0-354E-4B1A-A12C-6B34C2660065" label="Open" paletteLabel="Open" tag="-1" id="uBp-0X-vtn"/>
-                    <toolbarItem implicitItemIdentifier="E2976E68-31F1-43F7-90A6-BE5551EB823D" label="Save" paletteLabel="Save" tag="-1" id="KrS-A3-GQY"/>
-                    <toolbarItem implicitItemIdentifier="6DC45D25-8A47-4002-888A-825C0CD0F85B" label="Delete" paletteLabel="Delete" tag="-1" id="vIF-IR-WD2"/>
+                    <toolbarItem implicitItemIdentifier="F55344B2-7884-4339-A363-A88C0F64913B" label="Merge" paletteLabel="Merge" tag="-1" id="TJh-Yk-6eZ">
+                        <connections>
+                            <action selector="mergeToolbarItem:" target="bt5-4z-eBH" id="3Rf-sD-k1g"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="2DA2CFF1-43D8-48F7-A2E3-54148622F1C9" label="Split" paletteLabel="Split" tag="-1" id="lE8-xv-yJd">
+                        <connections>
+                            <action selector="splitToolbarItem:" target="bt5-4z-eBH" id="aT5-Pa-Aj8"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="E228FAB0-354E-4B1A-A12C-6B34C2660065" label="Open" paletteLabel="Open" tag="-1" id="uBp-0X-vtn">
+                        <connections>
+                            <action selector="openMenu:" target="bt5-4z-eBH" id="wWQ-gi-Dwk"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="E2976E68-31F1-43F7-90A6-BE5551EB823D" label="Save" paletteLabel="Save" tag="-1" id="KrS-A3-GQY">
+                        <connections>
+                            <action selector="saveMenu:" target="bt5-4z-eBH" id="89X-oa-Bb9"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="6DC45D25-8A47-4002-888A-825C0CD0F85B" label="Delete" paletteLabel="Delete" tag="-1" id="vIF-IR-WD2">
+                        <connections>
+                            <action selector="insertToolbarItem:" target="bt5-4z-eBH" id="G2f-ir-cHy"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="B7BD0889-4042-4A64-A886-E82C757D6346" label="Insert" paletteLabel="Insert" tag="-1" id="lIe-mG-qWN"/>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="uBp-0X-vtn"/>
@@ -1006,11 +1027,13 @@
                     <toolbarItem reference="neb-CP-57b"/>
                     <toolbarItem reference="TJh-Yk-6eZ"/>
                     <toolbarItem reference="lE8-xv-yJd"/>
+                    <toolbarItem reference="neb-CP-57b"/>
                     <toolbarItem reference="vIF-IR-WD2"/>
+                    <toolbarItem reference="lIe-mG-qWN"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>
-                <outlet property="delegate" destination="bt5-4z-eBH" id="vhD-xl-E2Q"/>
+                <outlet property="delegate" destination="bt5-4z-eBH" id="ygX-cY-GTG"/>
             </connections>
         </window>
     </objects>

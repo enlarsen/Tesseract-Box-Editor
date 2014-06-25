@@ -37,7 +37,7 @@ protocol BoxResizeDelegate
     func beganDragging()
 }
 
-class BoxEditorViewController: NSViewController, BoxResizeDelegate
+class BoxEditorViewController: NSViewController, NSWindowDelegate, BoxResizeDelegate
 {
     @IBOutlet var characterView: CharacterView
     @IBOutlet var mainImageView: ImageView
@@ -61,6 +61,8 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
     {
         mainImageView.imageScaling = .ImageScaleProportionallyUpOrDown
         characterView.delegate = self
+
+        self.window.nextResponder = self;
     }
 
 
@@ -91,10 +93,16 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
 
     func updateSelectedCharacterDisplays()
     {
-        let box = tableArrayController.selectedObjects[0] as Box
-        updateCharacterView(box)
-        mainImageView.removeAnimatedSelection()
-        mainImageView.setupAnimatedSelectionRect(box.boxToNSRect(), cropPoint: cropPoint)
+
+        if tableArrayController?.selectedObjects?.count > 0
+        {
+            if let box = tableArrayController?.selectedObjects[0] as? Box
+            {
+                updateCharacterView(box)
+                mainImageView.removeAnimatedSelection()
+                mainImageView.setupAnimatedSelectionRect(box.boxToNSRect(), cropPoint: cropPoint)
+            }
+        }
 
     }
 
@@ -113,6 +121,17 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         }
     }
 
+    func changeCharacter(char: String, index: Int)
+    {
+        let box = boxes[index]
+        self.window.undoManager.prepareWithInvocationTarget(self).changeCharacter(box.character, index: index)
+        if !self.window.undoManager.undoing
+        {
+            self.window.undoManager.setActionName("Change \"\(box.character)\" to \"\(char)\"")
+        }
+        box.character = char
+    }
+
     func boxDidResize(rect: NSRect)
     {
         let selectionIndex = tableArrayController.selectionIndex
@@ -124,7 +143,6 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         let box = tableArrayController.selectedObjects[0] as Box
         let selectionIndex = tableArrayController.selectionIndex
         let currentRect = box.boxToNSRect()
-        let undo = self.window.undoManager
 
         self.window.undoManager.prepareWithInvocationTarget(self).resizeBox(currentRect, index: selectionIndex)
         if !self.window.undoManager.undoing
@@ -165,6 +183,31 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
 
     func mergeBoxes(index: Int)
     {
+        let firstBox = boxes[index]
+
+        if index + 1 < boxes.count
+        {
+            let secondBox = boxes[index + 1]
+            self.window.undoManager.beginUndoGrouping()
+
+            self.window.undoManager.prepareWithInvocationTarget(self).insertBox(secondBox, index: index + 1)
+            self.window.undoManager.prepareWithInvocationTarget(self).resizeBox(firstBox.boxToNSRect(), index: index)
+
+            if !self.window.undoManager.undoing
+            {
+                self.window.undoManager.setActionName("Merge Boxes")
+            }
+            self.window.undoManager.endUndoGrouping()
+
+            // This is a simplistic merge. Should create a rectangle that encloses both characters, but
+            // have to test whether the character is at the end of the line and do something reasonable then.
+            firstBox.width += secondBox.width
+            removeBox(index + 1)
+        }
+        else
+        {
+            return
+        }
 
     }
 
@@ -173,6 +216,26 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         
     }
 
+    @IBAction func mergeToolbarItem(sender: NSToolbarItem)
+    {
+
+    }
+
+    @IBAction func splitToolbarItem(sender: NSToolbarItem)
+    {
+
+    }
+
+    @IBAction func deleteToolbarItem(sender: NSToolbarItem)
+    {
+
+    }
+
+    @IBAction func insertToolbarItem(sender: NSToolbarItem)
+    {
+
+    }
+    
     @IBAction func openMenu(sender: NSMenuItem)
     {
 
@@ -200,7 +263,7 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
                 self.currentFileUrl = boxUrl
                 self.tableArrayController.setSelectionIndex(1)
                 self.tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display
-
+                self.window.title = boxUrl.path.lastPathComponent
             }
         })
 
@@ -410,15 +473,6 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
 
     }
 
-    func mergeCharacters()
-    {
-
-    }
-
-    func splitCharacters()
-    {
-
-    }
 
     func getNextIntValue(scanner: NSScanner) -> Int
     {
@@ -427,8 +481,18 @@ class BoxEditorViewController: NSViewController, BoxResizeDelegate
         scanner.scanInt(&intValue)
         return Int(intValue)
     }
-    
 
+    func windowDidResize(notification: NSNotification!)
+    {
+        updateSelectedCharacterDisplays()
+    }
 
+    // TODO: Need to allow composed characters
+    override func keyDown(theEvent: NSEvent!)
+    {
+        let selectedIndex = tableArrayController.selectionIndex
+        changeCharacter(theEvent.characters, index: selectedIndex)
+        self.window.documentEdited = true
+    }
 }
 
