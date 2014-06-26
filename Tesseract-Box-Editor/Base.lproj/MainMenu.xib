@@ -947,9 +947,9 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xLd-QD-zl2">
-                                    <rect key="frame" x="105" y="68" width="32" height="58"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="bezel" title="L" id="xmb-bU-CDM" userLabel="Character view">
-                                        <font key="font" metaFont="system" size="44"/>
+                                    <rect key="frame" x="104" y="66" width="35" height="71"/>
+                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="L" id="xmb-bU-CDM" userLabel="Character view">
+                                        <font key="font" size="51" name="Georgia"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         <connections>
@@ -967,7 +967,7 @@
                             <constraint firstAttribute="width" constant="244" id="CgW-ud-QzQ"/>
                             <constraint firstAttribute="centerX" secondItem="xLd-QD-zl2" secondAttribute="centerX" constant="3" id="eZh-Pi-Ejr"/>
                             <constraint firstAttribute="height" constant="134" id="mCE-Zc-FVw"/>
-                            <constraint firstItem="xLd-QD-zl2" firstAttribute="top" secondItem="edi-I5-DOu" secondAttribute="top" constant="11" id="nT0-ij-BMy"/>
+                            <constraint firstItem="xLd-QD-zl2" firstAttribute="top" secondItem="edi-I5-DOu" secondAttribute="top" id="nT0-ij-BMy"/>
                         </constraints>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
