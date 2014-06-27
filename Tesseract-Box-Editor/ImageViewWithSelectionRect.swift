@@ -3,9 +3,8 @@
 //  Tesseract-Box-Editor
 //
 //  Created by Erik Larsen on 6/8/14.
-//  Copyright (c) 2014 Erik Larsen. All rights reserved.
 //
-//  MIT LICENSE
+//  Copyright (c) 2014 Erik Larsen. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining
 //  a copy of this software and associated documentation files (the

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		B34AF637193FDCB400DA19FA /* CharacterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34AF636193FDCB400DA19FA /* CharacterView.swift */; };
 		B35EB4A719450D7A0064A62A /* ImageViewWithSelectionRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */; };
+		B3839F34195DDCCC00C45821 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3839F33195DDCCC00C45821 /* Document.xib */; };
+		B3839F36195DE74C00C45821 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3839F35195DE74C00C45821 /* Document.swift */; };
 		B39693BD19424052004E13AA /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39693BC19424052004E13AA /* Box.swift */; };
 		B39693BF19424084004E13AA /* BoxEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39693BE19424084004E13AA /* BoxEditorViewController.swift */; };
 		B39693C11942A0F5004E13AA /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39693C01942A0F5004E13AA /* ImageView.swift */; };
@@ -23,6 +25,7 @@
 		B3C9263219340283006A1020 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C9261119340283006A1020 /* Cocoa.framework */; };
 		B3C9263A19340283006A1020 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B3C9263819340283006A1020 /* InfoPlist.strings */; };
 		B3C9263C19340283006A1020 /* Tesseract_Box_EditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C9263B19340283006A1020 /* Tesseract_Box_EditorTests.m */; };
+		B3DB7F61195E131E00ACE379 /* BoxResizeDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DB7F60195E131E00ACE379 /* BoxResizeDelegateProtocol.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +44,8 @@
 		B350FE13195364C800124CA9 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = SOURCE_ROOT; };
 		B350FE141953680400124CA9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
 		B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewWithSelectionRect.swift; sourceTree = "<group>"; };
+		B3839F33195DDCCC00C45821 /* Document.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Document.xib; sourceTree = "<group>"; };
+		B3839F35195DE74C00C45821 /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		B39693BC19424052004E13AA /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		B39693BE19424084004E13AA /* BoxEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxEditorViewController.swift; sourceTree = "<group>"; };
 		B39693C01942A0F5004E13AA /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
@@ -63,6 +68,7 @@
 		B3C9263719340283006A1020 /* Tesseract-Box-EditorTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tesseract-Box-EditorTests-Info.plist"; sourceTree = "<group>"; };
 		B3C9263919340283006A1020 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B3C9263B19340283006A1020 /* Tesseract_Box_EditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tesseract_Box_EditorTests.m; sourceTree = "<group>"; };
+		B3DB7F60195E131E00ACE379 /* BoxResizeDelegateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxResizeDelegateProtocol.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +140,9 @@
 				B34AF636193FDCB400DA19FA /* CharacterView.swift */,
 				B39693BC19424052004E13AA /* Box.swift */,
 				B39693BE19424084004E13AA /* BoxEditorViewController.swift */,
+				B3839F35195DE74C00C45821 /* Document.swift */,
+				B3DB7F60195E131E00ACE379 /* BoxResizeDelegateProtocol.swift */,
+				B3839F33195DDCCC00C45821 /* Document.xib */,
 				B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */,
 				B39693C01942A0F5004E13AA /* ImageView.swift */,
 				B3C9262919340283006A1020 /* Images.xcassets */,
@@ -255,6 +264,7 @@
 				B3C9261C19340283006A1020 /* InfoPlist.strings in Resources */,
 				B3C9262A19340283006A1020 /* Images.xcassets in Resources */,
 				B3C9262219340283006A1020 /* Credits.rtf in Resources */,
+				B3839F34195DDCCC00C45821 /* Document.xib in Resources */,
 				B3C9262819340283006A1020 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -274,6 +284,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3DB7F61195E131E00ACE379 /* BoxResizeDelegateProtocol.swift in Sources */,
+				B3839F36195DE74C00C45821 /* Document.swift in Sources */,
 				B39693C11942A0F5004E13AA /* ImageView.swift in Sources */,
 				B35EB4A719450D7A0064A62A /* ImageViewWithSelectionRect.swift in Sources */,
 				B39693BF19424084004E13AA /* BoxEditorViewController.swift in Sources */,
