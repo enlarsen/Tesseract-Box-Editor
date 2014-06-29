@@ -5,14 +5,12 @@
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="Document" customModule="TesseractBoxEditor" customModuleProvider="target">
+        <customObject id="-2" userLabel="File's Owner" customClass="DocumentWindowController" customModule="TesseractBoxEditor" customModuleProvider="target">
             <connections>
-                <outlet property="boxesTableView" destination="mYa-Dw-4CU" id="hMv-9C-eyE"/>
                 <outlet property="characterView" destination="3V0-Lk-hjz" id="Ztz-kd-eyp"/>
                 <outlet property="mainImageView" destination="82W-uG-Ovg" id="2Ap-mh-pOJ"/>
                 <outlet property="tableArrayController" destination="ua5-mU-zbD" id="gl0-1Q-xay"/>
                 <outlet property="tableView" destination="mYa-Dw-4CU" id="wsp-P3-x1q"/>
-                <outlet property="tstOutlet" destination="82W-uG-Ovg" id="lZ8-h1-f11"/>
                 <outlet property="window" destination="1Cl-q2-BCc" id="Eeb-7V-2Oo"/>
             </connections>
         </customObject>
@@ -56,6 +54,9 @@
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="ua5-mU-zbD" name="value" keyPath="arrangedObjects.character" id="XiR-dr-aq3"/>
+                                            </connections>
                                         </tableColumn>
                                         <tableColumn width="40" minWidth="40" maxWidth="1000" id="rp1-4x-5uC">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="X">
@@ -70,6 +71,9 @@
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="ua5-mU-zbD" name="value" keyPath="arrangedObjects.x" id="1FZ-4b-N3N"/>
+                                            </connections>
                                         </tableColumn>
                                         <tableColumn width="36" minWidth="10" maxWidth="3.4028234663852886e+38" id="Xj2-95-MAv">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Y">
@@ -84,6 +88,9 @@
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="ua5-mU-zbD" name="value" keyPath="arrangedObjects.y" id="OnW-L3-adm"/>
+                                            </connections>
                                         </tableColumn>
                                         <tableColumn width="48" minWidth="10" maxWidth="3.4028234663852886e+38" id="b10-Id-p4F">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Width">
@@ -98,6 +105,9 @@
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="ua5-mU-zbD" name="value" keyPath="arrangedObjects.width" id="nfM-hi-j5v"/>
+                                            </connections>
                                         </tableColumn>
                                         <tableColumn width="63" minWidth="10" maxWidth="3.4028234663852886e+38" id="o8m-hQ-7dZ">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Height">
@@ -112,6 +122,9 @@
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                            <connections>
+                                                <binding destination="ua5-mU-zbD" name="value" keyPath="arrangedObjects.height" id="vFF-ez-HTU"/>
+                                            </connections>
                                         </tableColumn>
                                     </tableColumns>
                                 </tableView>
@@ -163,6 +176,9 @@
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
+                                    <connections>
+                                        <binding destination="ua5-mU-zbD" name="value" keyPath="selection.x" id="uCl-M3-smj"/>
+                                    </connections>
                                 </textField>
                                 <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Wo-p8-Sx6">
                                     <rect key="frame" x="94" y="34" width="19" height="27"/>
@@ -184,6 +200,9 @@
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
+                                    <connections>
+                                        <binding destination="ua5-mU-zbD" name="value" keyPath="selection.y" id="ar7-Dh-u7s"/>
+                                    </connections>
                                 </textField>
                                 <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cZA-KE-F5B">
                                     <rect key="frame" x="221" y="34" width="19" height="27"/>
@@ -201,6 +220,9 @@
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
+                                    <connections>
+                                        <binding destination="ua5-mU-zbD" name="value" keyPath="selection.height" id="hCu-yI-lZs"/>
+                                    </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Wo-VX-kV5">
                                     <rect key="frame" x="130" y="17" width="50" height="17"/>
@@ -222,6 +244,9 @@
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
+                                    <connections>
+                                        <binding destination="ua5-mU-zbD" name="value" keyPath="selection.width" id="ppR-ka-8ue"/>
+                                    </connections>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zun-fE-umu">
                                     <rect key="frame" x="9" y="17" width="45" height="17"/>
@@ -238,6 +263,9 @@
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
+                                    <connections>
+                                        <binding destination="ua5-mU-zbD" name="value" keyPath="selection.character" id="aiY-FY-RmI"/>
+                                    </connections>
                                 </textField>
                             </subviews>
                         </view>
@@ -259,9 +287,6 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" size="37" name="Webdings"/>
                                 </buttonCell>
-                                <connections>
-                                    <action selector="nextPage:" target="-2" id="Qtz-GF-ENT"/>
-                                </connections>
                             </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tgm-4G-Xan" userLabel="Square Button - previous">
                                 <rect key="frame" x="243" y="0.0" width="43" height="35"/>
@@ -269,9 +294,6 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" size="37" name="Webdings"/>
                                 </buttonCell>
-                                <connections>
-                                    <action selector="previousPage:" target="-2" id="KN8-dJ-zvE"/>
-                                </connections>
                             </button>
                         </subviews>
                     </customView>
@@ -301,16 +323,8 @@
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="uxB-xk-n3B"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="45R-gv-of0"/>
-                    <toolbarItem implicitItemIdentifier="F55344B2-7884-4339-A363-A88C0F64913B" label="Merge" paletteLabel="Merge" tag="-1" id="WU7-tS-V39">
-                        <connections>
-                            <action selector="mergeToolbarItem:" target="-2" id="TzF-Sh-22Z"/>
-                        </connections>
-                    </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="2DA2CFF1-43D8-48F7-A2E3-54148622F1C9" label="Split" paletteLabel="Split" tag="-1" id="EQm-JW-wDU">
-                        <connections>
-                            <action selector="splitToolbarItem:" target="-2" id="E65-Cs-Ntw"/>
-                        </connections>
-                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="F55344B2-7884-4339-A363-A88C0F64913B" label="Merge" paletteLabel="Merge" tag="-1" id="WU7-tS-V39"/>
+                    <toolbarItem implicitItemIdentifier="2DA2CFF1-43D8-48F7-A2E3-54148622F1C9" label="Split" paletteLabel="Split" tag="-1" id="EQm-JW-wDU"/>
                     <toolbarItem implicitItemIdentifier="E228FAB0-354E-4B1A-A12C-6B34C2660065" label="Open" paletteLabel="Open" tag="-1" id="aZy-hH-Rvb"/>
                     <toolbarItem implicitItemIdentifier="E2976E68-31F1-43F7-90A6-BE5551EB823D" label="Save" paletteLabel="Save" tag="-1" id="42P-RC-k1v"/>
                 </allowedToolbarItems>
@@ -336,7 +350,7 @@
                 <string>height</string>
             </declaredKeys>
             <connections>
-                <binding destination="-2" name="contentArray" keyPath="boxes" id="s3b-5f-Bg7"/>
+                <binding destination="-2" name="contentArray" keyPath="boxes" id="3Cl-KG-KcE"/>
             </connections>
         </arrayController>
     </objects>

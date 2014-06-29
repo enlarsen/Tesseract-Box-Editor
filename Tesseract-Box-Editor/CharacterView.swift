@@ -34,7 +34,6 @@ class CharacterView: ImageViewWithSelectionRect
     var width: CGFloat = 0.0
     var height:CGFloat = 0.0
     var startPointIndex = -1
-    var cropPoint = NSZeroPoint
     var scaleFactor = 1.0
     var delegate: BoxResizeDelegate? = nil
 
@@ -79,7 +78,7 @@ class CharacterView: ImageViewWithSelectionRect
 
         self.selectionRect = rect
         removeAnimatedSelection()
-        setupAnimatedSelectionRect(self.selectionRect, cropPoint: cropPoint)
+        setupAnimatedSelectionRect(self.selectionRect)
 
         NSLog("image size: %@", NSStringFromSize(image.size));
         NSLog("characterView frame: %@", NSStringFromRect(self.frame));
@@ -134,7 +133,7 @@ class CharacterView: ImageViewWithSelectionRect
         drawHandles(newRect)
         
         selectionRect = newRect
-        window.documentEdited = true
+//        window.documentEdited = true
         if delegate
         {
             delegate!.boxDidResize(newRect)

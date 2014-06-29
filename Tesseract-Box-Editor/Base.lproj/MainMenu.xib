@@ -13,7 +13,6 @@
         <customObject id="-3" userLabel="Application"/>
         <customObject id="Voe-Tx-rLC" customClass="TBEAppDelegate"/>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
-        <viewController id="bt5-4z-eBH" customClass="BoxEditorViewController" customModule="TesseractBoxEditor" customModuleProvider="target"/>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
             <items>
                 <menuItem title="Tesseract Box Editor" id="1Xt-HY-uBw">

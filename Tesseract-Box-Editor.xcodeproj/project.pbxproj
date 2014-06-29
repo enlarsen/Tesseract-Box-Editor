@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B34AF637193FDCB400DA19FA /* CharacterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34AF636193FDCB400DA19FA /* CharacterView.swift */; };
 		B35EB4A719450D7A0064A62A /* ImageViewWithSelectionRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */; };
+		B3831BA9195F3E1100AD552E /* DocumentWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3831BA8195F3E1100AD552E /* DocumentWindowController.swift */; };
 		B3839F34195DDCCC00C45821 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3839F33195DDCCC00C45821 /* Document.xib */; };
 		B3839F36195DE74C00C45821 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3839F35195DE74C00C45821 /* Document.swift */; };
 		B39693BD19424052004E13AA /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39693BC19424052004E13AA /* Box.swift */; };
@@ -44,6 +45,7 @@
 		B350FE13195364C800124CA9 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = SOURCE_ROOT; };
 		B350FE141953680400124CA9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
 		B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewWithSelectionRect.swift; sourceTree = "<group>"; };
+		B3831BA8195F3E1100AD552E /* DocumentWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentWindowController.swift; sourceTree = "<group>"; };
 		B3839F33195DDCCC00C45821 /* Document.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Document.xib; sourceTree = "<group>"; };
 		B3839F35195DE74C00C45821 /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		B39693BC19424052004E13AA /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				B39693BC19424052004E13AA /* Box.swift */,
 				B39693BE19424084004E13AA /* BoxEditorViewController.swift */,
 				B3839F35195DE74C00C45821 /* Document.swift */,
+				B3831BA8195F3E1100AD552E /* DocumentWindowController.swift */,
 				B3DB7F60195E131E00ACE379 /* BoxResizeDelegateProtocol.swift */,
 				B3839F33195DDCCC00C45821 /* Document.xib */,
 				B35EB4A619450D7A0064A62A /* ImageViewWithSelectionRect.swift */,
@@ -288,6 +291,7 @@
 				B3839F36195DE74C00C45821 /* Document.swift in Sources */,
 				B39693C11942A0F5004E13AA /* ImageView.swift in Sources */,
 				B35EB4A719450D7A0064A62A /* ImageViewWithSelectionRect.swift in Sources */,
+				B3831BA9195F3E1100AD552E /* DocumentWindowController.swift in Sources */,
 				B39693BF19424084004E13AA /* BoxEditorViewController.swift in Sources */,
 				B34AF637193FDCB400DA19FA /* CharacterView.swift in Sources */,
 				B39693BD19424052004E13AA /* Box.swift in Sources */,

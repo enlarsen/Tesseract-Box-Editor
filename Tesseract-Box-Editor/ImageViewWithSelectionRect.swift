@@ -37,10 +37,7 @@ class ImageViewWithSelectionRect: NSImageView
     var selectionHandleLayers: CAShapeLayer[] = []
     var drawSelectionHandles = false
 
-//    var leftHandle = NSZeroPoint
-//    var rightHandle = NSZeroPoint
-//    var topHandle = NSZeroPoint
-//    var bottomHandle = NSZeroPoint
+    var cropPoint = CGPointZero
 
     var selectionRect = NSZeroRect
     var strokeColor = NSColor.blackColor().CGColor
@@ -54,7 +51,7 @@ class ImageViewWithSelectionRect: NSImageView
         super.init(frame: frameRect)
     }
 
-    func setupAnimatedSelectionRect(rect: NSRect, cropPoint: NSPoint)
+    func setupAnimatedSelectionRect(rect: NSRect)
     {
 
         selectionLayer = createAnimationLayer()
@@ -63,7 +60,7 @@ class ImageViewWithSelectionRect: NSImageView
         selectionLayer.addAnimation(createAnimation(), forKey: "linePhase")
 
 
-        selectionLayer.transform = createTransform(cropPoint)
+        selectionLayer.transform = createTransform(self.cropPoint)
 
         NSLog("Cropped point: \(cropPoint)")
 
@@ -246,4 +243,112 @@ class ImageViewWithSelectionRect: NSImageView
 
         return NSRect(x: left, y: bottom, width: right - left, height: top - bottom)
     }
+
+    // Coordinates are inverted in this function. (0, 0) is the upper left and y increases down
+    func trimImage(image: NSImage)
+    {
+        let imageRef = image.CGImageForProposedRect(nil, context: nil, hints: nil).takeUnretainedValue()
+        let width = CGImageGetWidth(imageRef)
+        let height = CGImageGetHeight(imageRef)
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+
+        let bytesPerPixel: UInt = 4
+        let bytesPerComponent: UInt = 8
+        let rawData = calloc(height * width * bytesPerPixel, 1)
+        let pointer = UnsafePointer<UInt8>(rawData)
+        let bytesPerRow = bytesPerPixel * width
+        let bitmapInfo = CGBitmapInfo.fromRaw(CGImageAlphaInfo.PremultipliedLast.toRaw() | CGBitmapInfo.ByteOrder32Big.toRaw())!
+        let context = CGBitmapContextCreate(rawData, width, height, bytesPerComponent, bytesPerRow, colorSpace, bitmapInfo)
+
+        CGContextDrawImage(context, CGRect(x: 0, y: 0, width: Int(width), height: Int(height)), imageRef)
+
+        var top = 0
+        var left = 0
+        var right = Int(width)
+        var bottom = Int(height)
+
+        for var x = 0; x < Int(width); x++
+        {
+            if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer)
+            {
+                left = x
+                break
+            }
+        }
+
+        for var x = Int(width) - 1; x >= 0; x--
+        {
+            if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer)
+            {
+                right = x
+                break
+            }
+        }
+
+        for var y = 0; y < Int(height); y++
+        {
+            if scanRow(y, width: Int(width), pointer: pointer)
+            {
+                top = y
+                break
+            }
+        }
+
+        for var y = Int(height) - 1; y >= 0; y--
+        {
+            if scanRow(y, width: Int(width), pointer: pointer)
+            {
+                bottom = y
+                break
+            }
+        }
+
+
+        // Flip the coordinates to be Mac coordinates and add a border around the cropped image
+        let cropRect = NSRect(x: left - 5, y: Int(height) - bottom - 6, width: right - left + 10, height: bottom - top + 10)
+        //        let target = NSImage(size: cropRect.size)
+        //        target.lockFocus()
+        //
+        //        image.drawInRect(NSRect(x: 0, y: 0, width: cropRect.size.width, height: cropRect.size.height), fromRect: cropRect, operation: .CompositeCopy, fraction: 1.0)
+        //        target.unlockFocus()
+
+        free(rawData)
+
+        image.lockFocus()
+        let bitmapRep = NSBitmapImageRep(focusedViewRect: cropRect)
+        image.unlockFocus()
+
+
+        let croppedImage = NSImage(data: bitmapRep.representationUsingType(.NSPNGFileType, properties: nil))
+        cropPoint = cropRect.origin
+        self.image = croppedImage
+        
+        
+    }
+
+    func scanRow(y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
+    {
+        for var x = 0; x < width; x++
+        {
+            if pointer[(x + y * width) * 4] != 0xff // only check red, could cause trouble
+            {
+                return true
+            }
+        }
+        return false
+    }
+
+    func scanColumn(x: Int, height: Int, width: Int, pointer: UnsafePointer<UInt8>) -> Bool
+    {
+        for var y = 0; y < height; y++
+        {
+            if pointer[(x + y * width) * 4] != 0xff // only check red
+            {
+                return true
+            }
+        }
+        return false
+    }
+
+
 }
