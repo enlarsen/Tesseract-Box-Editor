@@ -158,31 +158,10 @@ class Document: NSDocument
         addWindowController(windowController)
     }
 
-    override func windowControllerDidLoadNib(aController: NSWindowController)
-    {
-//        super.windowControllerDidLoadNib(aController)
+//    override func windowControllerDidLoadNib(aController: NSWindowController)
+//    {
 //
-//        if observing
-//        {
-//            self.tableArrayController.removeObserver(self, forKeyPath: "selection")
-//            observing = false
-//        }
-//
-//        if let tiffUrl = fileURL?.URLByDeletingPathExtension.URLByAppendingPathExtension("tif")
-//        {
-//            let imageFromFile = NSImage(byReferencingURL: tiffUrl)
-//            pagesFromImage = imageFromFile.representations as NSBitmapImageRep[]
-//            mainImageView.image = trimImage(imageFromFile)
-//            currentTiffPage = 0
-//
-//            tableArrayController.addObserver(self, forKeyPath: "selection", options: nil, context: nil)
-//            observing = true
-//            tableArrayController.setSelectionIndex(1)
-//            tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display
-//    //        window.title = url.path.lastPathComponent
-//            createPageIndex()
-
-    }
+//    }
 
 
 }

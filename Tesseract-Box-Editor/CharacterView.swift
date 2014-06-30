@@ -80,9 +80,9 @@ class CharacterView: ImageViewWithSelectionRect
         removeAnimatedSelection()
         setupAnimatedSelectionRect(self.selectionRect)
 
-        NSLog("image size: %@", NSStringFromSize(image.size));
-        NSLog("characterView frame: %@", NSStringFromRect(self.frame));
-        NSLog("crop point: %@", NSStringFromPoint(cropPoint));
+//        NSLog("image size: %@", NSStringFromSize(image.size));
+//        NSLog("characterView frame: %@", NSStringFromRect(self.frame));
+//        NSLog("crop point: %@", NSStringFromPoint(cropPoint));
 
         width = image.size.width
         height = image.size.height

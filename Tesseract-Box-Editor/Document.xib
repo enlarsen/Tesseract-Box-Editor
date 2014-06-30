@@ -170,7 +170,7 @@
                                 </textField>
                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V38-aE-Ce9">
                                     <rect key="frame" x="56" y="37" width="41" height="22"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="9hS-GV-s2O">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="9hS-GV-s2O">
                                         <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="Fjl-qH-l75"/>
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -194,7 +194,7 @@
                                 </textField>
                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Flc-J4-EPd">
                                     <rect key="frame" x="185" y="37" width="41" height="22"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="ZKW-KX-cHZ">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="ZKW-KX-cHZ">
                                         <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="1wq-Ar-ZUY"/>
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -212,18 +212,6 @@
                                     <rect key="frame" x="221" y="11" width="19" height="27"/>
                                     <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="TaX-Xd-j9V"/>
                                 </stepper>
-                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U5n-bh-Pb1">
-                                    <rect key="frame" x="185" y="14" width="41" height="22"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="Eb7-kC-MIg">
-                                        <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="vKE-lg-dwD"/>
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                    <connections>
-                                        <binding destination="ua5-mU-zbD" name="value" keyPath="selection.height" id="hCu-yI-lZs"/>
-                                    </connections>
-                                </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Wo-VX-kV5">
                                     <rect key="frame" x="130" y="17" width="50" height="17"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Height:" id="bmM-Hp-YgT">
@@ -238,7 +226,7 @@
                                 </stepper>
                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YtC-UA-gY3">
                                     <rect key="frame" x="56" y="14" width="41" height="22"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="XSg-x1-2o9">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="XSg-x1-2o9">
                                         <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="gcd-BE-XNA"/>
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -267,6 +255,18 @@
                                         <binding destination="ua5-mU-zbD" name="value" keyPath="selection.character" id="aiY-FY-RmI"/>
                                     </connections>
                                 </textField>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U5n-bh-Pb1">
+                                    <rect key="frame" x="185" y="14" width="41" height="22"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" refusesFirstResponder="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="Eb7-kC-MIg">
+                                        <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="vKE-lg-dwD"/>
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <binding destination="ua5-mU-zbD" name="value" keyPath="selection.height" id="hCu-yI-lZs"/>
+                                    </connections>
+                                </textField>
                             </subviews>
                         </view>
                         <constraints>
@@ -287,6 +287,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" size="37" name="Webdings"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="nextPage:" target="-2" id="0nb-H6-Y1u"/>
+                                </connections>
                             </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tgm-4G-Xan" userLabel="Square Button - previous">
                                 <rect key="frame" x="243" y="0.0" width="43" height="35"/>
@@ -294,6 +297,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" size="37" name="Webdings"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="previousPage:" target="-2" id="OTT-Rk-y8q"/>
+                                </connections>
                             </button>
                         </subviews>
                     </customView>
@@ -323,8 +329,16 @@
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="uxB-xk-n3B"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="45R-gv-of0"/>
-                    <toolbarItem implicitItemIdentifier="F55344B2-7884-4339-A363-A88C0F64913B" label="Merge" paletteLabel="Merge" tag="-1" id="WU7-tS-V39"/>
-                    <toolbarItem implicitItemIdentifier="2DA2CFF1-43D8-48F7-A2E3-54148622F1C9" label="Split" paletteLabel="Split" tag="-1" id="EQm-JW-wDU"/>
+                    <toolbarItem implicitItemIdentifier="F55344B2-7884-4339-A363-A88C0F64913B" label="Merge" paletteLabel="Merge" tag="-1" id="WU7-tS-V39">
+                        <connections>
+                            <action selector="mergeToolbarItem:" target="-2" id="w52-E8-SWf"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="2DA2CFF1-43D8-48F7-A2E3-54148622F1C9" label="Split" paletteLabel="Split" tag="-1" id="EQm-JW-wDU">
+                        <connections>
+                            <action selector="splitToolbarItem:" target="-2" id="Big-zo-Thr"/>
+                        </connections>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="E228FAB0-354E-4B1A-A12C-6B34C2660065" label="Open" paletteLabel="Open" tag="-1" id="aZy-hH-Rvb"/>
                     <toolbarItem implicitItemIdentifier="E2976E68-31F1-43F7-90A6-BE5551EB823D" label="Save" paletteLabel="Save" tag="-1" id="42P-RC-k1v"/>
                 </allowedToolbarItems>

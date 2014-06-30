@@ -62,7 +62,7 @@ class ImageViewWithSelectionRect: NSImageView
 
         selectionLayer.transform = createTransform(self.cropPoint)
 
-        NSLog("Cropped point: \(cropPoint)")
+//        NSLog("Cropped point: \(cropPoint)")
 
         if drawSelectionHandles
         {
@@ -114,14 +114,13 @@ class ImageViewWithSelectionRect: NSImageView
 
     func createTransform(cropPoint: NSPoint) -> CATransform3D
     {
-
         var verticalPadding = 0.0
         var horizontalPadding = 0.0
         var scaleFactor = 1.0
         let horizontalScaleFactor = frame.size.width / image.size.width
         let verticalScaleFactor = frame.size.height / image.size.height
 
-        NSLog("horizontal scale: \(horizontalScaleFactor) vertical scale: \(verticalScaleFactor)")
+//        NSLog("horizontal scale: \(horizontalScaleFactor) vertical scale: \(verticalScaleFactor)")
 
         if verticalScaleFactor - horizontalScaleFactor < 0
         {
@@ -138,14 +137,14 @@ class ImageViewWithSelectionRect: NSImageView
             verticalPadding = (frame.size.height - height) / 2.0
         }
 
-        NSLog("Horizontal padding: \(horizontalPadding), vertical padding: \(verticalPadding)")
+//        NSLog("Horizontal padding: \(horizontalPadding), vertical padding: \(verticalPadding)")
 
         var transform = CATransform3DIdentity
         transform = CATransform3DTranslate(transform, horizontalPadding, verticalPadding, 0.0)
         transform = CATransform3DScale(transform, scaleFactor, scaleFactor, 1.0)
         transform = CATransform3DTranslate(transform, -cropPoint.x, -cropPoint.y, 0.0)
 
-        NSLog("Transformation: \(transform.m11) \(transform.m22) \(transform.m41) \(transform.m42)")
+//        NSLog("Transformation: \(transform.m11) \(transform.m22) \(transform.m41) \(transform.m42)")
 
         return transform
     }

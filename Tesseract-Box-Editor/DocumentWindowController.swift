@@ -50,7 +50,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
     // Used by Cocoa bindings because they won't take a key path to "currentDocument.boxes"
-    var Boxes: Box[]
+    var boxes: Box[]
     {
         get
         {
@@ -78,9 +78,6 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
             self.didChangeValueForKey("isThereANextPage")
         }
     }
-
-    var boxes: Box[] = []
-    var pageIndex = Dictionary<Int, Int>()
 
     var isThereAPreviousPage: Bool
     {
@@ -116,8 +113,6 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     init(window: NSWindow!)
     {
         super.init(window: window)
-        NSLog("Init!")
-
     }
 
     override class func automaticallyNotifiesObserversForKey(key: String) -> Bool
@@ -152,19 +147,6 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     {
         if tableArrayController.selectedObjects.count > 0
         {
-            let box = tableArrayController.selectedObjects[0] as Box
-            if box.page != currentTiffPage
-            {
-                if currentTiffPage < pagesFromImage.count
-                {
-                    var size = pagesFromImage[box.page].size
-                    var image = NSImage(size:size)
-                    image.addRepresentation(pagesFromImage[box.page])
-                    mainImageView.trimImage(image)
-                    currentTiffPage = box.page
-
-                }
-            }
             updateSelectedCharacterDisplays()
         }
         else
@@ -181,6 +163,19 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         {
             if let box = tableArrayController?.selectedObjects[0] as? Box
             {
+                if box.page != currentTiffPage
+                {
+                    if currentTiffPage < pagesFromImage.count
+                    {
+                        var size = pagesFromImage[box.page].size
+                        var image = NSImage(size:size)
+                        image.addRepresentation(pagesFromImage[box.page])
+                        mainImageView.trimImage(image)
+                        currentTiffPage = box.page
+
+                    }
+                }
+
                 updateCharacterView(box)
                 mainImageView.removeAnimatedSelection()
                 mainImageView.setupAnimatedSelectionRect(box.boxToNSRect())
@@ -248,7 +243,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         {
             self.window.undoManager.setActionName("Insert Box")
         }
-        boxes.insert(box, atIndex: index)
+        currentDocument.boxes.insert(box, atIndex: index)
     }
 
     func removeBox(index: Int)
@@ -260,7 +255,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         {
             self.window.undoManager.setActionName("Delete Box")
         }
-        boxes.removeAtIndex(index)
+        currentDocument.boxes.removeAtIndex(index)
 
     }
 
@@ -287,6 +282,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
             firstBox.width += secondBox.width
             removeBox(index + 1)
             currentDocument.createPageIndex()
+            updateSelectedCharacterDisplays()
         }
         else
         {
@@ -319,9 +315,10 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         newBox.x2 = box.x2
         box.x2 = newBox.x - 2
 
-        boxes.insert(newBox, atIndex: index + 1)
+        currentDocument.boxes.insert(newBox, atIndex: index + 1)
 
         currentDocument.createPageIndex()
+        updateSelectedCharacterDisplays()
 
     }
 
@@ -366,7 +363,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         {
             return
         }
-        var row = pageIndex[index]
+        var row = currentDocument.pageIndex[index]
         tableArrayController.setSelectionIndex(row!)
         updateSelectedCharacterDisplays()
         tableView.scrollRowToVisible(row!)
@@ -381,7 +378,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         {
             return
         }
-        var row = pageIndex[index]
+        var row = currentDocument.pageIndex[index]
         tableArrayController.setSelectionIndex(row!)
         updateSelectedCharacterDisplays()
         tableView.scrollRowToVisible(row!)
@@ -439,98 +436,97 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
 
-    // TODO: This needs vastly improved error handling and value checking
-    func parseBoxFile(path: String)
-    {
-        var error: NSError? = nil
-        var boxes: Box[] = []
-        let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: &error)
-
-        if let mError = error
-        {
-            NSLog("Error: \(mError.localizedDescription)")
-        }
-
-        fileText.enumerateLinesUsingBlock({line, stop in
-            var box = Box()
-            var intValue: CInt = 0
-            var characterAsString: NSString?
-
-            let scanner = NSScanner(string: line)
-            scanner.caseSensitive = true
-            scanner.charactersToBeSkipped = nil
-
-            scanner.scanUpToString(" ", intoString: &characterAsString)
-
-            if let character = characterAsString
-            {
-                box.character = character
-            }
-
-            scanner.charactersToBeSkipped = NSCharacterSet.whitespaceCharacterSet()
-
-            box.x = self.getNextIntValue(scanner)
-            box.y = self.getNextIntValue(scanner)
-            box.x2 = self.getNextIntValue(scanner)
-            box.y2 = self.getNextIntValue(scanner)
-            box.page = self.getNextIntValue(scanner)
-            boxes.append(box)
-            })
-        self.boxes = boxes
-
-    }
-
-    func saveBoxFile(path: String)
-    {
-        var output = ""
-        var error: NSError? = nil;
-
-        let outputPath = path.stringByAppendingPathExtension("tmp")
-
-        for box in boxes
-        {
-            output = output.stringByAppendingString(box.formatForWriting())
-        }
-
-        output.writeToFile(outputPath, atomically: true, encoding: NSUTF8StringEncoding, error: &error)
-        if let uwError = error
-        {
-            NSLog("writeToFile error: \(uwError.localizedDescription)")
-            return;
-        }
-        NSFileManager.defaultManager().moveItemAtPath(path, toPath: path.stringByAppendingPathExtension("old"), error: &error)
-        if let uwError = error
-        {
-            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
-            return;
-        }
-        NSFileManager.defaultManager().moveItemAtPath(outputPath, toPath: path, error: &error)
-        if let uwError = error
-        {
-            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
-            return;
-        }
-        NSFileManager.defaultManager().removeFileAtPath(path.stringByAppendingPathExtension("old"), handler: nil)
-
-        //       window.documentEdited = false
-
-    }
-
-
-    func getNextIntValue(scanner: NSScanner) -> Int
-    {
-        var intValue: CInt = 0
-
-        scanner.scanInt(&intValue)
-        return Int(intValue)
-    }
-
-
-
+//    // TODO: This needs vastly improved error handling and value checking
+//    func parseBoxFile(path: String)
+//    {
+//        var error: NSError? = nil
+//        var boxes: Box[] = []
+//        let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: &error)
+//
+//        if let mError = error
+//        {
+//            NSLog("Error: \(mError.localizedDescription)")
+//        }
+//
+//        fileText.enumerateLinesUsingBlock({line, stop in
+//            var box = Box()
+//            var intValue: CInt = 0
+//            var characterAsString: NSString?
+//
+//            let scanner = NSScanner(string: line)
+//            scanner.caseSensitive = true
+//            scanner.charactersToBeSkipped = nil
+//
+//            scanner.scanUpToString(" ", intoString: &characterAsString)
+//
+//            if let character = characterAsString
+//            {
+//                box.character = character
+//            }
+//
+//            scanner.charactersToBeSkipped = NSCharacterSet.whitespaceCharacterSet()
+//
+//            box.x = self.getNextIntValue(scanner)
+//            box.y = self.getNextIntValue(scanner)
+//            box.x2 = self.getNextIntValue(scanner)
+//            box.y2 = self.getNextIntValue(scanner)
+//            box.page = self.getNextIntValue(scanner)
+//            boxes.append(box)
+//            })
+//        self.currentDocument.boxes = boxes
+//
+//    }
+//
+//    func saveBoxFile(path: String)
+//    {
+//        var output = ""
+//        var error: NSError? = nil;
+//
+//        let outputPath = path.stringByAppendingPathExtension("tmp")
+//
+//        for box in boxes
+//        {
+//            output = output.stringByAppendingString(box.formatForWriting())
+//        }
+//
+//        output.writeToFile(outputPath, atomically: true, encoding: NSUTF8StringEncoding, error: &error)
+//        if let uwError = error
+//        {
+//            NSLog("writeToFile error: \(uwError.localizedDescription)")
+//            return;
+//        }
+//        NSFileManager.defaultManager().moveItemAtPath(path, toPath: path.stringByAppendingPathExtension("old"), error: &error)
+//        if let uwError = error
+//        {
+//            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
+//            return;
+//        }
+//        NSFileManager.defaultManager().moveItemAtPath(outputPath, toPath: path, error: &error)
+//        if let uwError = error
+//        {
+//            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
+//            return;
+//        }
+//        NSFileManager.defaultManager().removeFileAtPath(path.stringByAppendingPathExtension("old"), handler: nil)
+//
+//        //       window.documentEdited = false
+//
+//    }
+//
+//    func getNextIntValue(scanner: NSScanner) -> Int
+//    {
+//        var intValue: CInt = 0
+//
+//        scanner.scanInt(&intValue)
+//        return Int(intValue)
+//    }
 
     func windowDidResize(notification: NSNotification!)
     {
-        //        updateSelectedCharacterDisplays()
+        if mainImageView.image != nil
+        {
+            updateSelectedCharacterDisplays()
+        }
     }
 
     override func windowDidLoad()
@@ -543,7 +539,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
             observing = false
         }
 
-        if let tiffUrl = document.fileURL?.URLByDeletingPathExtension.URLByAppendingPathExtension("tif")
+        if let tiffUrl = currentDocument.fileURL?.URLByDeletingPathExtension.URLByAppendingPathExtension("tif")
         {
             let imageFromFile = NSImage(byReferencingURL: tiffUrl)
             pagesFromImage = imageFromFile.representations as NSBitmapImageRep[]
@@ -552,24 +548,38 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
             
             tableArrayController.addObserver(self, forKeyPath: "selection", options: nil, context: nil)
             observing = true
-            tableArrayController.setSelectionIndex(1)
-            tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display
-            //        window.title = url.path.lastPathComponent
+//            tableArrayController.setSelectionIndex(1)
+//            tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display
             currentDocument.createPageIndex()
+//            tableView.scrollRowToVisible(0)
+//            tableView.becomeFirstResponder()
         }
 
     }
 
     // TODO: Need to allow composed characters
+    // TODO: Investigate the method for interpreting characters, see orange book
     override func keyDown(theEvent: NSEvent!)
     {
         let selectedIndex = tableArrayController.selectionIndex
         changeCharacter(theEvent.characters, index: selectedIndex)
-//        self.window.documentEdited = true
+    }
+
+    override func encodeRestorableStateWithCoder(coder: NSCoder!)
+    {
+        super.encodeRestorableStateWithCoder(coder)
+        coder.encodeInteger(tableArrayController.selectionIndex, forKey: "selectionIndex")
 
 
     }
 
+    override func restoreStateWithCoder(coder: NSCoder!)
+    {
+        super.restoreStateWithCoder(coder)
+        let index = coder.decodeIntegerForKey("selectionIndex")
 
-
+        tableArrayController.setSelectionIndex(index)
+        tableView.scrollRowToVisible(index)
+        updateSelectedCharacterDisplays()
+    }
 }
