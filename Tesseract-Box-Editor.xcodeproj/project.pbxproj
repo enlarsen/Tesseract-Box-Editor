@@ -71,6 +71,8 @@
 		B3C9263919340283006A1020 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B3C9263B19340283006A1020 /* Tesseract_Box_EditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tesseract_Box_EditorTests.m; sourceTree = "<group>"; };
 		B3DB7F60195E131E00ACE379 /* BoxResizeDelegateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxResizeDelegateProtocol.swift; sourceTree = "<group>"; };
+		B3EB961219634EAD00AD4EF9 /* TBE-1-thumb.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "TBE-1-thumb.jpeg"; sourceTree = "<group>"; };
+		B3EB961319634EAD00AD4EF9 /* TBE-1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "TBE-1.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +162,8 @@
 		B3C9261819340283006A1020 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B3EB961219634EAD00AD4EF9 /* TBE-1-thumb.jpeg */,
+				B3EB961319634EAD00AD4EF9 /* TBE-1.jpg */,
 				B3C9261919340283006A1020 /* Tesseract-Box-Editor-Info.plist */,
 				B3C9261A19340283006A1020 /* InfoPlist.strings */,
 				B3C9261D19340283006A1020 /* main.m */,

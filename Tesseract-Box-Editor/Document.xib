@@ -19,7 +19,7 @@
         <window title="Tesseract Box Editor" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="1Cl-q2-BCc">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="1014" height="673"/>
+            <rect key="contentRect" x="335" y="277" width="1014" height="673"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
             <view key="contentView" id="1tI-Ib-T6P">
                 <rect key="frame" x="0.0" y="0.0" width="1014" height="673"/>
@@ -389,8 +389,16 @@
                             <action selector="splitToolbarItem:" target="-2" id="Big-zo-Thr"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="E228FAB0-354E-4B1A-A12C-6B34C2660065" label="Open" paletteLabel="Open" tag="-1" id="aZy-hH-Rvb"/>
-                    <toolbarItem implicitItemIdentifier="E2976E68-31F1-43F7-90A6-BE5551EB823D" label="Save" paletteLabel="Save" tag="-1" id="42P-RC-k1v"/>
+                    <toolbarItem implicitItemIdentifier="E228FAB0-354E-4B1A-A12C-6B34C2660065" label="Open" paletteLabel="Open" tag="-1" id="aZy-hH-Rvb">
+                        <connections>
+                            <action selector="openDocument:" target="-1" id="jbi-iF-jlf"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="E2976E68-31F1-43F7-90A6-BE5551EB823D" label="Save" paletteLabel="Save" tag="-1" id="42P-RC-k1v">
+                        <connections>
+                            <action selector="saveDocument:" target="-1" id="gZO-rk-JT9"/>
+                        </connections>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="aZy-hH-Rvb"/>
