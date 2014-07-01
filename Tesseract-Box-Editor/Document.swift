@@ -31,20 +31,18 @@ import QuartzCore
 
 class Document: NSDocument
 {
+    var pagesFromImage: NSBitmapImageRep[] = []
+    var boxes: Box[] = []
+    var pageIndex = Dictionary<Int, Int>()
+
 
     override var windowNibName: String
     {
         return "Document"
     }
 
-
-    var pagesFromImage: NSBitmapImageRep[] = []
-    var boxes: Box[] = []
-    var pageIndex = Dictionary<Int, Int>()
-
-
     // TODO: This needs vastly improved error handling and value checking
-    func parseBoxFile(path: String)
+    func readBoxFile(path: String)
     {
         var error: NSError? = nil
         var boxes: Box[] = []
@@ -84,7 +82,8 @@ class Document: NSDocument
 
     }
 
-    func saveBoxFile(path: String)
+    // From previous non-NSDocument architecture
+    func oldSaveBoxFile(path: String)
     {
         var output = ""
         var error: NSError? = nil;
@@ -115,9 +114,6 @@ class Document: NSDocument
             return;
         }
         NSFileManager.defaultManager().removeFileAtPath(path.stringByAppendingPathExtension("old"), handler: nil)
-
- //       window.documentEdited = false
-
     }
 
 
@@ -147,9 +143,32 @@ class Document: NSDocument
 
     override func readFromURL(url: NSURL!, ofType typeName: String!, error outError: NSErrorPointer) -> Bool
     {
-        parseBoxFile(url.path)
+        readBoxFile(url.path)
 
         return true
+    }
+
+    override func writeToURL(url: NSURL!, ofType typeName: String!, error outError: NSErrorPointer) -> Bool
+    {
+        var output = ""
+
+        for box in boxes
+        {
+            output = output.stringByAppendingString(box.formatForWriting())
+        }
+
+        output.writeToFile(url.path, atomically: true, encoding: NSUTF8StringEncoding, error: outError)
+
+//        NSLog("\(outError.memory?.localizedDescription)")
+
+        if outError.memory == nil
+        {
+            return true
+        }
+        else
+        {
+            return false
+        }
     }
 
     override func makeWindowControllers()
@@ -157,11 +176,6 @@ class Document: NSDocument
         let windowController = DocumentWindowController(windowNibName: self.windowNibName)
         addWindowController(windowController)
     }
-
-//    override func windowControllerDidLoadNib(aController: NSWindowController)
-//    {
-//
-//    }
 
 
 }

@@ -61,7 +61,6 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     var selectionLayer: CAShapeLayer!
     var selectionHandleLayers: CAShapeLayer[] = []
 
-//    var cropPoint = CGPointZero
     var observing = false
 
     var pagesFromImage: NSBitmapImageRep[] = []
@@ -185,7 +184,8 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
     // Someday do everything as straight up bindings.
-    // Problems with direct binding: need image and crop as well as the box down in the CharacterView
+    // Problems with direct binding: need image and crop as well as the box down in the CharacterView,
+    // unless I move the image down to the viewer classes and then let them crop the image.
     func resizeBox(rect: NSRect, index: Int)
     {
         var box = boxes[index]
@@ -385,17 +385,6 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     }
 
-
-    //    @IBAction func saveMenu(sender: NSMenuItem)
-    //    {
-    //        if currentFileUrl
-    //        {
-    //            saveBoxFile(currentFileUrl!.path)
-    //        }
-    //    }
-
-
-
     func scanRow(y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
         for var x = 0; x < width; x++
@@ -436,90 +425,6 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
 
-//    // TODO: This needs vastly improved error handling and value checking
-//    func parseBoxFile(path: String)
-//    {
-//        var error: NSError? = nil
-//        var boxes: Box[] = []
-//        let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: &error)
-//
-//        if let mError = error
-//        {
-//            NSLog("Error: \(mError.localizedDescription)")
-//        }
-//
-//        fileText.enumerateLinesUsingBlock({line, stop in
-//            var box = Box()
-//            var intValue: CInt = 0
-//            var characterAsString: NSString?
-//
-//            let scanner = NSScanner(string: line)
-//            scanner.caseSensitive = true
-//            scanner.charactersToBeSkipped = nil
-//
-//            scanner.scanUpToString(" ", intoString: &characterAsString)
-//
-//            if let character = characterAsString
-//            {
-//                box.character = character
-//            }
-//
-//            scanner.charactersToBeSkipped = NSCharacterSet.whitespaceCharacterSet()
-//
-//            box.x = self.getNextIntValue(scanner)
-//            box.y = self.getNextIntValue(scanner)
-//            box.x2 = self.getNextIntValue(scanner)
-//            box.y2 = self.getNextIntValue(scanner)
-//            box.page = self.getNextIntValue(scanner)
-//            boxes.append(box)
-//            })
-//        self.currentDocument.boxes = boxes
-//
-//    }
-//
-//    func saveBoxFile(path: String)
-//    {
-//        var output = ""
-//        var error: NSError? = nil;
-//
-//        let outputPath = path.stringByAppendingPathExtension("tmp")
-//
-//        for box in boxes
-//        {
-//            output = output.stringByAppendingString(box.formatForWriting())
-//        }
-//
-//        output.writeToFile(outputPath, atomically: true, encoding: NSUTF8StringEncoding, error: &error)
-//        if let uwError = error
-//        {
-//            NSLog("writeToFile error: \(uwError.localizedDescription)")
-//            return;
-//        }
-//        NSFileManager.defaultManager().moveItemAtPath(path, toPath: path.stringByAppendingPathExtension("old"), error: &error)
-//        if let uwError = error
-//        {
-//            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
-//            return;
-//        }
-//        NSFileManager.defaultManager().moveItemAtPath(outputPath, toPath: path, error: &error)
-//        if let uwError = error
-//        {
-//            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
-//            return;
-//        }
-//        NSFileManager.defaultManager().removeFileAtPath(path.stringByAppendingPathExtension("old"), handler: nil)
-//
-//        //       window.documentEdited = false
-//
-//    }
-//
-//    func getNextIntValue(scanner: NSScanner) -> Int
-//    {
-//        var intValue: CInt = 0
-//
-//        scanner.scanInt(&intValue)
-//        return Int(intValue)
-//    }
 
     func windowDidResize(notification: NSNotification!)
     {

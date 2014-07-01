@@ -128,7 +128,7 @@ class CharacterView: ImageViewWithSelectionRect
         point = CGPointApplyAffineTransform(point, transform)
         
         let newRect = computeResizedSelectionRectangle(self.startPointIndex, dragPoint: point)
-        NSLog("newRect: \(newRect)")
+//        NSLog("newRect: \(newRect)")
         drawSelectionRect(newRect)
         drawHandles(newRect)
         
