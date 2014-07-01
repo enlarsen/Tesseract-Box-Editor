@@ -29,6 +29,10 @@ tesseract eng.swim.exp0.tif eng.swim.exp0 batch.nochop makebox
 
 For more information about generating box files see [Training Tesseract](https://code.google.com/p/tesseract-ocr/wiki/TrainingTesseract3)
 
+## Downloading
+
+Downloads are here: [downloads](https://github.com/enlarsen/Tesseract-Box-Editor/releases)
+
 ## License
 
 [MIT License](http://zonorocha.mit-license.org)
