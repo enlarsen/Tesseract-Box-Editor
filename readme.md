@@ -24,7 +24,7 @@ tesseract [lang].[fontname].exp[num].tif [lang].[fontname].exp[num] batch.nochop
 For example:
 
 ```
-tesseract eng.swim.exp0.tif eng.timesitalic.exp0 batch.nochop makebox
+tesseract eng.swim.exp0.tif eng.swim.exp0 batch.nochop makebox
 ```
 
 For more information about generating box files see [Training Tesseract](https://code.google.com/p/tesseract-ocr/wiki/TrainingTesseract3)
