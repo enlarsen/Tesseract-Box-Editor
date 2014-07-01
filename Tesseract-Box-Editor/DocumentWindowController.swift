@@ -56,6 +56,10 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         {
             return currentDocument.boxes
         }
+        set(newValue)
+        {
+            currentDocument.boxes = newValue
+        }
     }
 
     var selectionLayer: CAShapeLayer!
@@ -243,7 +247,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         {
             self.window.undoManager.setActionName("Insert Box")
         }
-        currentDocument.boxes.insert(box, atIndex: index)
+        boxes.insert(box, atIndex: index)
     }
 
     func removeBox(index: Int)
@@ -255,7 +259,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         {
             self.window.undoManager.setActionName("Delete Box")
         }
-        currentDocument.boxes.removeAtIndex(index)
+        boxes.removeAtIndex(index)
 
     }
 
@@ -315,7 +319,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         newBox.x2 = box.x2
         box.x2 = newBox.x - 2
 
-        currentDocument.boxes.insert(newBox, atIndex: index + 1)
+        boxes.insert(newBox, atIndex: index + 1)
 
         currentDocument.createPageIndex()
         updateSelectedCharacterDisplays()
@@ -453,11 +457,11 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
             
             tableArrayController.addObserver(self, forKeyPath: "selection", options: nil, context: nil)
             observing = true
-//            tableArrayController.setSelectionIndex(1)
-//            tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display
+            tableArrayController.setSelectionIndex(1)
+            tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display
             currentDocument.createPageIndex()
-//            tableView.scrollRowToVisible(0)
-//            tableView.becomeFirstResponder()
+            tableView.scrollRowToVisible(0)
+            tableView.becomeFirstResponder()
         }
 
     }
@@ -466,9 +470,20 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     // TODO: Investigate the method for interpreting characters, see orange book
     override func keyDown(theEvent: NSEvent!)
     {
-        let selectedIndex = tableArrayController.selectionIndex
-        changeCharacter(theEvent.characters, index: selectedIndex)
+        self.interpretKeyEvents([theEvent])
+
     }
+
+    // function for interpretKeyEvents
+    override func insertText(insertString: AnyObject!)
+    {
+        if let characters = insertString as? String
+        {
+            let selectedIndex = tableArrayController.selectionIndex
+            changeCharacter(characters, index: selectedIndex)
+        }
+    }
+
 
     override func encodeRestorableStateWithCoder(coder: NSCoder!)
     {
