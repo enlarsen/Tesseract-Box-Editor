@@ -35,7 +35,7 @@ Downloads are here: [downloads](https://github.com/enlarsen/Tesseract-Box-Editor
 
 ## Screenshot
 
-[![image](https://raw.githubusercontent.com/enlarsen/Tesseract-Box-Editor/master/Tesseract-Box-Editor/TBE-1-thumb.jpeg "Screenshot")](https://raw.githubusercontent.com/enlarsen/Tesseract-Box-Editor/master/Tesseract-Box-Editor/TBE-1.jpeg)
+[![image](https://raw.githubusercontent.com/enlarsen/Tesseract-Box-Editor/master/Tesseract-Box-Editor/TBE-1-thumb.jpg "Screenshot")](https://raw.githubusercontent.com/enlarsen/Tesseract-Box-Editor/master/Tesseract-Box-Editor/TBE-1.jpg)
 
 ## License
 
