@@ -33,6 +33,10 @@ For more information about generating box files see [Training Tesseract](https:/
 
 Downloads are here: [downloads](https://github.com/enlarsen/Tesseract-Box-Editor/releases)
 
+## Screenshot
+
+[![image](https://raw.githubusercontent.com/enlarsen/Tesseract-Box-Editor/master/Tesseract-Box-Editor/TBE-1-thumb.jpeg "Screenshot")](https://raw.githubusercontent.com/enlarsen/Tesseract-Box-Editor/master/Tesseract-Box-Editor/TBE-1.jpeg]
+
 ## License
 
 [MIT License](http://zonorocha.mit-license.org)
