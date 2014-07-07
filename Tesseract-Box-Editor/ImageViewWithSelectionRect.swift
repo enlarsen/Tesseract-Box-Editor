@@ -34,7 +34,7 @@ import QuartzCore
 class ImageViewWithSelectionRect: NSImageView
 {
     var selectionLayer: CAShapeLayer!
-    var selectionHandleLayers: CAShapeLayer[] = []
+    var selectionHandleLayers: [CAShapeLayer] = []
     var drawSelectionHandles = false
 
     var cropPoint = CGPointZero
@@ -151,7 +151,7 @@ class ImageViewWithSelectionRect: NSImageView
 
     func drawHandles(rect: NSRect)
     {
-        var handles: NSPoint[] = []
+        var handles: [NSPoint] = []
 
 
         let left = CGFloat(rect.origin.x)

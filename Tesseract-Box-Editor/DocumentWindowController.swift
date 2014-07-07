@@ -50,7 +50,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
     // Used by Cocoa bindings because they won't take a key path to "currentDocument.boxes"
-    var boxes: Box[]
+    var boxes: [Box]
     {
         get
         {
@@ -63,11 +63,11 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
     var selectionLayer: CAShapeLayer!
-    var selectionHandleLayers: CAShapeLayer[] = []
+    var selectionHandleLayers: [CAShapeLayer] = []
 
     var observing = false
 
-    var pagesFromImage: NSBitmapImageRep[] = []
+    var pagesFromImage: [NSBitmapImageRep] = []
     var currentTiffPage: Int = -1
     {
         willSet
@@ -146,7 +146,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
 
-    override func observeValueForKeyPath(keyPath: String!, ofObject object: AnyObject!, change: NSDictionary!, context: CMutableVoidPointer)
+    override func observeValueForKeyPath(keyPath: String!, ofObject object: AnyObject!, change: [NSObject : AnyObject]!, context: UnsafePointer<()>)
     {
         if tableArrayController.selectedObjects.count > 0
         {
@@ -451,7 +451,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         if let tiffUrl = currentDocument.fileURL?.URLByDeletingPathExtension.URLByAppendingPathExtension("tif")
         {
             let imageFromFile = NSImage(byReferencingURL: tiffUrl)
-            pagesFromImage = imageFromFile.representations as NSBitmapImageRep[]
+            pagesFromImage = imageFromFile.representations as [NSBitmapImageRep]
             mainImageView.trimImage(imageFromFile)
             currentTiffPage = 0
             

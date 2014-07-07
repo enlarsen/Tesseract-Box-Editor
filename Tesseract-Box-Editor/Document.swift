@@ -31,8 +31,8 @@ import QuartzCore
 
 class Document: NSDocument
 {
-    var pagesFromImage: NSBitmapImageRep[] = []
-    var boxes: Box[] = []
+    var pagesFromImage: [NSBitmapImageRep] = []
+    var boxes: [Box] = []
     var pageIndex = Dictionary<Int, Int>()
 
 
@@ -45,7 +45,7 @@ class Document: NSDocument
     func readBoxFile(path: String)
     {
         var error: NSError? = nil
-        var boxes: Box[] = []
+        var boxes: [Box] = []
         let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: &error)
 
         if let mError = error
@@ -80,40 +80,6 @@ class Document: NSDocument
             })
         self.boxes = boxes
 
-    }
-
-    // From previous non-NSDocument architecture
-    func oldSaveBoxFile(path: String)
-    {
-        var output = ""
-        var error: NSError? = nil;
-
-        let outputPath = path.stringByAppendingPathExtension("tmp")
-
-        for box in boxes
-        {
-            output = output.stringByAppendingString(box.formatForWriting())
-        }
-
-        output.writeToFile(outputPath, atomically: true, encoding: NSUTF8StringEncoding, error: &error)
-        if let uwError = error
-        {
-            NSLog("writeToFile error: \(uwError.localizedDescription)")
-            return;
-        }
-        NSFileManager.defaultManager().moveItemAtPath(path, toPath: path.stringByAppendingPathExtension("old"), error: &error)
-        if let uwError = error
-        {
-            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
-            return;
-        }
-        NSFileManager.defaultManager().moveItemAtPath(outputPath, toPath: path, error: &error)
-        if let uwError = error
-        {
-            NSLog("moveItemAtPath error: \(uwError.localizedDescription)")
-            return;
-        }
-        NSFileManager.defaultManager().removeFileAtPath(path.stringByAppendingPathExtension("old"), handler: nil)
     }
 
 
