@@ -31,10 +31,10 @@ import QuartzCore
 
 class DocumentWindowController: NSWindowController, BoxResizeDelegate
 {
-    @IBOutlet var mainImageView: ImageView
-    @IBOutlet var characterView: CharacterView
-    @IBOutlet var tableArrayController: NSArrayController
-    @IBOutlet var tableView: NSTableView
+    @IBOutlet var mainImageView: ImageView!
+    @IBOutlet var characterView: CharacterView!
+    @IBOutlet var tableArrayController: NSArrayController!
+    @IBOutlet var tableView: NSTableView!
 
     override var windowNibName: String
     {
@@ -113,11 +113,6 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
 
-    init(window: NSWindow!)
-    {
-        super.init(window: window)
-    }
-
     override class func automaticallyNotifiesObserversForKey(key: String) -> Bool
     {
 
@@ -132,21 +127,14 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     }
 
-    init(windowNibName: String!)
-    {
-        super.init()
-
-    }
 
     override func awakeFromNib()
     {
         mainImageView.imageScaling = .ImageScaleProportionallyUpOrDown
         characterView.delegate = self
-
     }
 
-
-    override func observeValueForKeyPath(keyPath: String!, ofObject object: AnyObject!, change: [NSObject : AnyObject]!, context: UnsafePointer<()>)
+    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>)
     {
         if tableArrayController.selectedObjects.count > 0
         {
@@ -197,7 +185,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         box.y = Int(rect.origin.y)
         box.width = Int(rect.size.width)
         box.height = Int(rect.size.height)
-        if self.window.undoManager.undoing && index == tableArrayController.selectionIndex
+        if self.window!.undoManager!.undoing && index == tableArrayController.selectionIndex
         {
             updateSelectedCharacterDisplays()
         }
@@ -206,10 +194,10 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     func changeCharacter(char: String, index: Int)
     {
         let box = boxes[index]
-        self.window.undoManager.prepareWithInvocationTarget(self).changeCharacter(box.character, index: index)
-        if !self.window.undoManager.undoing
+        self.window!.undoManager!.prepareWithInvocationTarget(self).changeCharacter(box.character, index: index)
+        if !self.window!.undoManager!.undoing
         {
-            self.window.undoManager.setActionName("Change \"\(box.character)\" to \"\(char)\"")
+            self.window!.undoManager!.setActionName("Change \"\(box.character)\" to \"\(char)\"")
         }
         box.character = char
     }
@@ -226,10 +214,10 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         let selectionIndex = tableArrayController.selectionIndex
         let currentRect = box.boxToNSRect()
 
-        self.window.undoManager.prepareWithInvocationTarget(self).resizeBox(currentRect, index: selectionIndex)
-        if !self.window.undoManager.undoing
+        self.window!.undoManager!.prepareWithInvocationTarget(self).resizeBox(currentRect, index: selectionIndex)
+        if !self.window!.undoManager!.undoing
         {
-            self.window.undoManager.setActionName("Resize Box")
+            self.window!.undoManager!.setActionName("Resize Box")
         }
 
     }
@@ -241,11 +229,11 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     func insertBox(box: Box, index: Int)
     {
-        self.window.undoManager.prepareWithInvocationTarget(self).removeBox(index)
+        self.window!.undoManager!.prepareWithInvocationTarget(self).removeBox(index)
 
-        if !self.window.undoManager.undoing
+        if !self.window!.undoManager!.undoing
         {
-            self.window.undoManager.setActionName("Insert Box")
+            self.window!.undoManager!.setActionName("Insert Box")
         }
         boxes.insert(box, atIndex: index)
     }
@@ -253,11 +241,11 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     func removeBox(index: Int)
     {
         let box = boxes[index]
-        self.window.undoManager.prepareWithInvocationTarget(self).insertBox(box, index: index)
+        self.window!.undoManager!.prepareWithInvocationTarget(self).insertBox(box, index: index)
 
-        if !self.window.undoManager.undoing
+        if !self.window!.undoManager!.undoing
         {
-            self.window.undoManager.setActionName("Delete Box")
+            self.window!.undoManager!.setActionName("Delete Box")
         }
         boxes.removeAtIndex(index)
 
@@ -270,16 +258,16 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         if index + 1 < boxes.count
         {
             let secondBox = boxes[index + 1]
-            self.window.undoManager.beginUndoGrouping()
+            self.window!.undoManager!.beginUndoGrouping()
 
-            self.window.undoManager.prepareWithInvocationTarget(self).insertBox(secondBox, index: index + 1)
-            self.window.undoManager.prepareWithInvocationTarget(self).resizeBox(firstBox.boxToNSRect(), index: index)
+            self.window!.undoManager!.prepareWithInvocationTarget(self).insertBox(secondBox, index: index + 1)
+            self.window!.undoManager!.prepareWithInvocationTarget(self).resizeBox(firstBox.boxToNSRect(), index: index)
 
-            if !self.window.undoManager.undoing
+            if !self.window!.undoManager!.undoing
             {
-                self.window.undoManager.setActionName("Merge Boxes")
+                self.window!.undoManager!.setActionName("Merge Boxes")
             }
-            self.window.undoManager.endUndoGrouping()
+            self.window!.undoManager!.endUndoGrouping()
 
             // This is a simplistic merge. Should create a rectangle that encloses both characters, but
             // have to test whether the character is at the end of the line and do something reasonable then.
@@ -299,16 +287,16 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     {
         let box = boxes[index]
 
-        self.window.undoManager.beginUndoGrouping()
+        self.window!.undoManager!.beginUndoGrouping()
 
-        self.window.undoManager.prepareWithInvocationTarget(self).removeBox(index + 1)
-        self.window.undoManager.prepareWithInvocationTarget(self).resizeBox(box.boxToNSRect(), index:index)
+        self.window!.undoManager!.prepareWithInvocationTarget(self).removeBox(index + 1)
+        self.window!.undoManager!.prepareWithInvocationTarget(self).resizeBox(box.boxToNSRect(), index:index)
 
-        if !self.window.undoManager.undoing
+        if !self.window!.undoManager!.undoing
         {
-            self.window.undoManager.setActionName("Split Box")
+            self.window!.undoManager!.setActionName("Split Box")
         }
-        self.window.undoManager.endUndoGrouping()
+        self.window!.undoManager!.endUndoGrouping()
 
         let newBox = Box()
         newBox.page = box.page
@@ -417,17 +405,28 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     {
         if box.page < pagesFromImage.count
         {
-            let image = NSImage(data: pagesFromImage[box.page].representationUsingType(.NSPNGFileType, properties: nil))
-            image.lockFocus()
-            let bitmapRep = NSBitmapImageRep(focusedViewRect: NSRect(x: box.x - 5, y: box.y - 5,
-                width: box.width + 10, height: box.height + 10))
-            image.unlockFocus()
+            let image = NSImage(size: pagesFromImage[box.page].size)
+            image.addRepresentation(pagesFromImage[box.page])
 
-            let croppedImage = NSImage(data: bitmapRep.representationUsingType(.NSPNGFileType, properties: nil))
+            let croppedImage = NSImage(size: NSSize(width: box.width + 10, height: box.height + 10))
+
+            croppedImage.lockFocus()
+            NSGraphicsContext.saveGraphicsState()
+            NSGraphicsContext.currentContext()?.imageInterpolation = NSImageInterpolation.None
+            NSGraphicsContext.currentContext()?.shouldAntialias = false
+
+            image.drawInRect(NSRect(x: 0, y: 0, width: box.width + 10, height: box.height + 10),
+                fromRect: NSRect(x: box.x - 5, y: box.y - 5,
+                    width: box.width + 10, height: box.height + 10),
+                operation: NSCompositingOperation.CompositeCopy,
+                fraction: 1.0)
+
+            NSGraphicsContext.restoreGraphicsState()
+            croppedImage.unlockFocus()
+
             characterView.updateCharacter(croppedImage, cropPoint: NSPoint(x: box.x - 5, y: box.y - 5), rect: box.boxToNSRect())
         }
     }
-
 
 
     func windowDidResize(notification: NSNotification!)
@@ -448,7 +447,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
             observing = false
         }
 
-        if let tiffUrl = currentDocument.fileURL?.URLByDeletingPathExtension.URLByAppendingPathExtension("tif")
+        if let tiffUrl = currentDocument.fileURL?.URLByDeletingPathExtension!.URLByAppendingPathExtension("tif")
         {
             let imageFromFile = NSImage(byReferencingURL: tiffUrl)
             pagesFromImage = imageFromFile.representations as [NSBitmapImageRep]
@@ -468,14 +467,14 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     // TODO: Need to allow composed characters
     // TODO: Investigate the method for interpreting characters, see orange book
-    override func keyDown(theEvent: NSEvent!)
+    override func keyDown(theEvent: NSEvent)
     {
         self.interpretKeyEvents([theEvent])
 
     }
 
     // function for interpretKeyEvents
-    override func insertText(insertString: AnyObject!)
+    override func insertText(insertString: AnyObject)
     {
         if let characters = insertString as? String
         {
@@ -485,7 +484,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
 
-    override func encodeRestorableStateWithCoder(coder: NSCoder!)
+    override func encodeRestorableStateWithCoder(coder: NSCoder)
     {
         super.encodeRestorableStateWithCoder(coder)
         coder.encodeInteger(tableArrayController.selectionIndex, forKey: "selectionIndex")
@@ -493,7 +492,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     }
 
-    override func restoreStateWithCoder(coder: NSCoder!)
+    override func restoreStateWithCoder(coder: NSCoder)
     {
         super.restoreStateWithCoder(coder)
         let index = coder.decodeIntegerForKey("selectionIndex")

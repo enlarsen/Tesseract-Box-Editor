@@ -29,12 +29,12 @@ import Foundation
 
 class Box: NSObject
 {
-    var x: Int
-    var y: Int
-    var x2: Int
-    var y2: Int
-    var page: Int
-    var character: String
+    var x: Int = 0
+    var y: Int = 0
+    var x2: Int = 0
+    var y2: Int = 0
+    var page: Int = 0
+    var character: String = " "
 
     var width: Int
     {
@@ -58,16 +58,6 @@ class Box: NSObject
         {
             y2 = y + newValue
         }
-    }
-
-    init()
-    {
-        x = 0
-        y = 0
-        x2 = 0
-        y2 = 0
-        page = 0
-        character = " "
     }
 
     class func boxToNSRect(box: Box) -> NSRect

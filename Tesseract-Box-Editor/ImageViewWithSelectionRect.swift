@@ -46,16 +46,11 @@ class ImageViewWithSelectionRect: NSImageView
     var duration = 0.75
     var numberHandles = 4
 
-    init(frame frameRect: NSRect)
-    {
-        super.init(frame: frameRect)
-    }
-
     func setupAnimatedSelectionRect(rect: NSRect)
     {
 
         selectionLayer = createAnimationLayer()
-        layer.addSublayer(selectionLayer)
+        layer!.addSublayer(selectionLayer)
 
         selectionLayer.addAnimation(createAnimation(), forKey: "linePhase")
 
@@ -106,7 +101,7 @@ class ImageViewWithSelectionRect: NSImageView
         dashAnimation.toValue = 15.0
         dashAnimation.duration = duration
         dashAnimation.cumulative = true
-        dashAnimation.repeatCount = 10000 /* HUGE_VALF undefined */
+        dashAnimation.repeatCount = HUGE
 
         return dashAnimation
     }
@@ -114,11 +109,11 @@ class ImageViewWithSelectionRect: NSImageView
 
     func createTransform(cropPoint: NSPoint) -> CATransform3D
     {
-        var verticalPadding = 0.0
-        var horizontalPadding = 0.0
-        var scaleFactor = 1.0
-        let horizontalScaleFactor = frame.size.width / image.size.width
-        let verticalScaleFactor = frame.size.height / image.size.height
+        var verticalPadding: CGFloat = 0.0
+        var horizontalPadding: CGFloat = 0.0
+        var scaleFactor: CGFloat = 1.0
+        let horizontalScaleFactor = frame.size.width / image!.size.width
+        let verticalScaleFactor = frame.size.height / image!.size.height
 
 //        NSLog("horizontal scale: \(horizontalScaleFactor) vertical scale: \(verticalScaleFactor)")
 
@@ -126,14 +121,14 @@ class ImageViewWithSelectionRect: NSImageView
         {
             scaleFactor = verticalScaleFactor
 
-            let width = image.size.width * scaleFactor
+            let width = image!.size.width * scaleFactor
             horizontalPadding = (frame.size.width - width) / 2.0
         }
         else
         {
             scaleFactor = horizontalScaleFactor
 
-            let height = image.size.height * scaleFactor
+            let height = image!.size.height * scaleFactor
             verticalPadding = (frame.size.height - height) / 2.0
         }
 
@@ -159,11 +154,10 @@ class ImageViewWithSelectionRect: NSImageView
         let right = CGFloat(rect.origin.x + rect.size.width)
         let top = CGFloat(rect.origin.y + rect.size.height)
 
-
-        handles += NSPoint(x: left, y: bottom + (top - bottom) / 2.0)  // left
-        handles += NSPoint(x: right, y: bottom + (top - bottom) / 2.0) // right
-        handles += NSPoint(x: left + (right - left) / 2.0, y: top) // top
-        handles += NSPoint(x: (left + (right - left) / 2.0), y: bottom) // bottom
+        handles.append(NSPoint(x: left, y: bottom + (top - bottom) / 2.0))  // left
+        handles.append(NSPoint(x: right, y: bottom + (top - bottom) / 2.0)) // right
+        handles.append(NSPoint(x: left + (right - left) / 2.0, y: top)) // top
+        handles.append(NSPoint(x: (left + (right - left) / 2.0), y: bottom)) // bottom
 
         if selectionHandleLayers.count == 0
         {
@@ -179,7 +173,7 @@ class ImageViewWithSelectionRect: NSImageView
 
     func drawHandle(point: NSPoint, layer: CAShapeLayer)
     {
-        let size = 0.5
+        let size: CGFloat = 0.5
         let path = CGPathCreateMutable()
 
         CGPathMoveToPoint(path, nil, point.x - size, point.y - size)
@@ -202,10 +196,8 @@ class ImageViewWithSelectionRect: NSImageView
             layer.fillColor = NSColor.blueColor().CGColor
             layer.transform = selectionLayer.transform
 
-            selectionHandleLayers += layer
-            self.layer.addSublayer(layer)
-
-
+            selectionHandleLayers.append(layer)
+            self.layer!.addSublayer(layer)
         }
     }
 
@@ -246,7 +238,7 @@ class ImageViewWithSelectionRect: NSImageView
     // Coordinates are inverted in this function. (0, 0) is the upper left and y increases down
     func trimImage(image: NSImage)
     {
-        let imageRef = image.CGImageForProposedRect(nil, context: nil, hints: nil).takeUnretainedValue()
+        let imageRef = image.CGImageForProposedRect(nil, context: nil, hints: nil)?.takeUnretainedValue()
         let width = CGImageGetWidth(imageRef)
         let height = CGImageGetHeight(imageRef)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
@@ -256,7 +248,7 @@ class ImageViewWithSelectionRect: NSImageView
         let rawData = calloc(height * width * bytesPerPixel, 1)
         let pointer = UnsafePointer<UInt8>(rawData)
         let bytesPerRow = bytesPerPixel * width
-        let bitmapInfo = CGBitmapInfo.fromRaw(CGImageAlphaInfo.PremultipliedLast.toRaw() | CGBitmapInfo.ByteOrder32Big.toRaw())!
+        let bitmapInfo = CGBitmapInfo(CGImageAlphaInfo.PremultipliedLast.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue)
         let context = CGBitmapContextCreate(rawData, width, height, bytesPerComponent, bytesPerRow, colorSpace, bitmapInfo)
 
         CGContextDrawImage(context, CGRect(x: 0, y: 0, width: Int(width), height: Int(height)), imageRef)
@@ -305,11 +297,6 @@ class ImageViewWithSelectionRect: NSImageView
 
         // Flip the coordinates to be Mac coordinates and add a border around the cropped image
         let cropRect = NSRect(x: left - 5, y: Int(height) - bottom - 6, width: right - left + 10, height: bottom - top + 10)
-        //        let target = NSImage(size: cropRect.size)
-        //        target.lockFocus()
-        //
-        //        image.drawInRect(NSRect(x: 0, y: 0, width: cropRect.size.width, height: cropRect.size.height), fromRect: cropRect, operation: .CompositeCopy, fraction: 1.0)
-        //        target.unlockFocus()
 
         free(rawData)
 
@@ -317,12 +304,9 @@ class ImageViewWithSelectionRect: NSImageView
         let bitmapRep = NSBitmapImageRep(focusedViewRect: cropRect)
         image.unlockFocus()
 
-
-        let croppedImage = NSImage(data: bitmapRep.representationUsingType(.NSPNGFileType, properties: nil))
+        let croppedImage = NSImage(data: bitmapRep!.representationUsingType(.NSPNGFileType, properties: [:])!)
         cropPoint = cropRect.origin
         self.image = croppedImage
-        
-        
     }
 
     func scanRow(y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool

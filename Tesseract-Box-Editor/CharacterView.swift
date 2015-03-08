@@ -37,7 +37,7 @@ class CharacterView: ImageViewWithSelectionRect
     var scaleFactor = 1.0
     var delegate: BoxResizeDelegate? = nil
 
-    init(frame frameRect: NSRect)
+    override init(frame frameRect: NSRect)
     {
         super.init(frame: frameRect)
         strokeColor = NSColor.grayColor().CGColor
@@ -89,7 +89,7 @@ class CharacterView: ImageViewWithSelectionRect
 
     }
 
-    override func mouseDown(theEvent: NSEvent!)
+    override func mouseDown(theEvent: NSEvent)
     {
         let point = convertPoint(theEvent.locationInWindow, fromView: nil)
         var transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
@@ -103,7 +103,7 @@ class CharacterView: ImageViewWithSelectionRect
             }
 
         }
-        if delegate
+        if (delegate != nil)
         {
             delegate!.beganDragging()
         }
@@ -111,17 +111,17 @@ class CharacterView: ImageViewWithSelectionRect
         // TODO: also check whether the click was within the selection rectangle in prep for a move
     }
 
-    override func mouseUp(theEvent: NSEvent!)
+    override func mouseUp(theEvent: NSEvent)
     {
         startPointIndex = -1
 
-        if delegate
+        if (delegate != nil)
         {
             delegate!.doneDragging()
         }
     }
 
-    override func mouseDragged(theEvent: NSEvent!)
+    override func mouseDragged(theEvent: NSEvent)
     {
         var point = convertPoint(theEvent.locationInWindow, fromView: nil)
         var transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
@@ -134,7 +134,7 @@ class CharacterView: ImageViewWithSelectionRect
         
         selectionRect = newRect
 //        window.documentEdited = true
-        if delegate
+        if (delegate != nil)
         {
             delegate!.boxDidResize(newRect)
         }

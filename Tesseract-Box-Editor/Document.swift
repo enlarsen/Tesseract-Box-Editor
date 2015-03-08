@@ -46,14 +46,14 @@ class Document: NSDocument
     {
         var error: NSError? = nil
         var boxes: [Box] = []
-        let fileText = NSString.stringWithContentsOfFile(path, encoding: NSUTF8StringEncoding, error: &error)
+        let fileText = NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: &error)
 
         if let mError = error
         {
             NSLog("Error: \(mError.localizedDescription)")
         }
 
-        fileText.enumerateLinesUsingBlock({line, stop in
+        fileText!.enumerateLinesUsingBlock({line, stop in
             var box = Box()
             var intValue: CInt = 0
             var characterAsString: NSString?
@@ -107,14 +107,14 @@ class Document: NSDocument
 
     }
 
-    override func readFromURL(url: NSURL!, ofType typeName: String!, error outError: NSErrorPointer) -> Bool
+    override func readFromURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool
     {
-        readBoxFile(url.path)
+        readBoxFile(url.path!)
 
         return true
     }
 
-    override func writeToURL(url: NSURL!, ofType typeName: String!, error outError: NSErrorPointer) -> Bool
+    override func writeToURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool
     {
         var output = ""
 
@@ -123,7 +123,7 @@ class Document: NSDocument
             output = output.stringByAppendingString(box.formatForWriting())
         }
 
-        output.writeToFile(url.path, atomically: true, encoding: NSUTF8StringEncoding, error: outError)
+        output.writeToFile(url.path!, atomically: true, encoding: NSUTF8StringEncoding, error: outError)
 
 //        NSLog("\(outError.memory?.localizedDescription)")
 
