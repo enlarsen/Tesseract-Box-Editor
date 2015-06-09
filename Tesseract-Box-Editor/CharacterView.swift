@@ -46,9 +46,13 @@ class CharacterView: ImageViewWithSelectionRect
         duration = 10.0
     }
 
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func awakeFromNib()
     {
-        imageScaling = .ImageScaleProportionallyUpOrDown
+        imageScaling = .ScaleProportionallyUpOrDown
         drawSelectionHandles = true
 
     }
@@ -56,11 +60,11 @@ class CharacterView: ImageViewWithSelectionRect
 
     func propagateValue(id: AnyObject, binding:NSString)
     {
-        if let bindingInfo = self.infoForBinding(binding)
+        if let bindingInfo = self.infoForBinding(binding as String)
         {
             if let bindingOptions : AnyObject = bindingInfo[NSOptionsKey]
             {
-                let transformer: NSValueTransformer = bindingOptions[NSValueTransformerBindingOption] as NSValueTransformer
+                let transformer: NSValueTransformer = bindingOptions[NSValueTransformerBindingOption] as! NSValueTransformer
             }
         }
         else
@@ -124,7 +128,7 @@ class CharacterView: ImageViewWithSelectionRect
     override func mouseDragged(theEvent: NSEvent)
     {
         var point = convertPoint(theEvent.locationInWindow, fromView: nil)
-        var transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
+        let transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
         point = CGPointApplyAffineTransform(point, transform)
         
         let newRect = computeResizedSelectionRectangle(self.startPointIndex, dragPoint: point)

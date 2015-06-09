@@ -236,7 +236,8 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = TBE;
-				LastUpgradeCheck = 0510;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Erik Larsen";
 				TargetAttributes = {
 					B3C9262E19340283006A1020 = {
@@ -375,6 +376,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -440,6 +442,7 @@
 				GCC_PREFIX_HEADER = "Tesseract-Box-Editor/Tesseract-Box-Editor-Prefix.pch";
 				INFOPLIST_FILE = "Tesseract-Box-Editor/Tesseract-Box-Editor-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.enlarsen.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_MODULE_NAME = TesseractBoxEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Tesseract-Box-Editor/Tesseract Box Editor-Bridging-Header.h";
@@ -458,6 +461,7 @@
 				GCC_PREFIX_HEADER = "Tesseract-Box-Editor/Tesseract-Box-Editor-Prefix.pch";
 				INFOPLIST_FILE = "Tesseract-Box-Editor/Tesseract-Box-Editor-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.enlarsen.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_MODULE_NAME = TesseractBoxEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Tesseract-Box-Editor/Tesseract Box Editor-Bridging-Header.h";
@@ -481,6 +485,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Tesseract-Box-EditorTests/Tesseract-Box-EditorTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.enlarsen.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -499,6 +504,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Tesseract-Box-Editor/Tesseract-Box-Editor-Prefix.pch";
 				INFOPLIST_FILE = "Tesseract-Box-EditorTests/Tesseract-Box-EditorTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.enlarsen.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;

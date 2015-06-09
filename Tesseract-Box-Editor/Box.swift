@@ -73,6 +73,6 @@ class Box: NSObject
     func formatForWriting() -> String
     {
         return NSString(format: "%@ %d %d %d %d %d\n", character,
-                            x, y, x2, y2, page)
+                            x, y, x2, y2, page) as String
     }
 }

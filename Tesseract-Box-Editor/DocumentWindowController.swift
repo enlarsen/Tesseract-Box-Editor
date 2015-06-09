@@ -45,7 +45,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     {
         get
         {
-            return document as Document
+            return document as! Document
         }
     }
 
@@ -130,11 +130,11 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     override func awakeFromNib()
     {
-        mainImageView.imageScaling = .ImageScaleProportionallyUpOrDown
+        mainImageView.imageScaling = .ScaleProportionallyUpOrDown
         characterView.delegate = self
     }
 
-    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>)
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject : AnyObject]?, context: UnsafeMutablePointer<Void>)
     {
         if tableArrayController.selectedObjects.count > 0
         {
@@ -158,8 +158,8 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
                 {
                     if currentTiffPage < pagesFromImage.count
                     {
-                        var size = pagesFromImage[box.page].size
-                        var image = NSImage(size:size)
+                        let size = pagesFromImage[box.page].size
+                        let image = NSImage(size:size)
                         image.addRepresentation(pagesFromImage[box.page])
                         mainImageView.trimImage(image)
                         currentTiffPage = box.page
@@ -180,7 +180,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     // unless I move the image down to the viewer classes and then let them crop the image.
     func resizeBox(rect: NSRect, index: Int)
     {
-        var box = boxes[index]
+        let box = boxes[index]
         box.x = Int(rect.origin.x)
         box.y = Int(rect.origin.y)
         box.width = Int(rect.size.width)
@@ -210,7 +210,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     func beganDragging()
     {
-        let box = tableArrayController.selectedObjects[0] as Box
+        let box = tableArrayController.selectedObjects[0] as! Box
         let selectionIndex = tableArrayController.selectionIndex
         let currentRect = box.boxToNSRect()
 
@@ -336,7 +336,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
         let selectedBox = boxes[index]
 
-        var box = Box()
+        let box = Box()
         box.x = selectedBox.x - selectedBox.width
         box.y = selectedBox.y
         box.width = selectedBox.width
@@ -350,12 +350,12 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     // The KVO will see the change in selection and update the image view
     @IBAction func previousPage(sender: NSButton)
     {
-        var index = currentTiffPage - 1
+        let index = currentTiffPage - 1
         if index < 0
         {
             return
         }
-        var row = currentDocument.pageIndex[index]
+        let row = currentDocument.pageIndex[index]
         tableArrayController.setSelectionIndex(row!)
         updateSelectedCharacterDisplays()
         tableView.scrollRowToVisible(row!)
@@ -365,12 +365,12 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     @IBAction func nextPage(sender: NSButton)
     {
-        var index = currentTiffPage + 1
+        let index = currentTiffPage + 1
         if index >= boxes.count
         {
             return
         }
-        var row = currentDocument.pageIndex[index]
+        let row = currentDocument.pageIndex[index]
         tableArrayController.setSelectionIndex(row!)
         updateSelectedCharacterDisplays()
         tableView.scrollRowToVisible(row!)
@@ -450,11 +450,11 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         if let tiffUrl = currentDocument.fileURL?.URLByDeletingPathExtension!.URLByAppendingPathExtension("tif")
         {
             let imageFromFile = NSImage(byReferencingURL: tiffUrl)
-            pagesFromImage = imageFromFile.representations as [NSBitmapImageRep]
+            pagesFromImage = imageFromFile.representations as! [NSBitmapImageRep]
             mainImageView.trimImage(imageFromFile)
             currentTiffPage = 0
             
-            tableArrayController.addObserver(self, forKeyPath: "selection", options: nil, context: nil)
+            tableArrayController.addObserver(self, forKeyPath: "selection", options: [], context: nil)
             observing = true
             tableArrayController.setSelectionIndex(1)
             tableArrayController.setSelectionIndex(0) // Move the selection so the observer sees the change and updates the display

@@ -84,7 +84,7 @@ class ImageViewWithSelectionRect: NSImageView
 
     func createAnimationLayer() -> CAShapeLayer
     {
-        var shapeLayer = CAShapeLayer()
+        let shapeLayer = CAShapeLayer()
         shapeLayer.lineWidth = 0.5
         shapeLayer.strokeColor = strokeColor
         shapeLayer.fillColor = fillColor
@@ -243,13 +243,13 @@ class ImageViewWithSelectionRect: NSImageView
         let height = CGImageGetHeight(imageRef)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
 
-        let bytesPerPixel: UInt = 4
-        let bytesPerComponent: UInt = 8
+        let bytesPerPixel: Int = 4
+        let bytesPerComponent: Int = 8
         let rawData = calloc(height * width * bytesPerPixel, 1)
         let pointer = UnsafePointer<UInt8>(rawData)
         let bytesPerRow = bytesPerPixel * width
-        let bitmapInfo = CGBitmapInfo(CGImageAlphaInfo.PremultipliedLast.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue)
-        let context = CGBitmapContextCreate(rawData, width, height, bytesPerComponent, bytesPerRow, colorSpace, bitmapInfo)
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedLast.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue)
+        let context = CGBitmapContextCreate(rawData, width, height, bytesPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue)
 
         CGContextDrawImage(context, CGRect(x: 0, y: 0, width: Int(width), height: Int(height)), imageRef)
 

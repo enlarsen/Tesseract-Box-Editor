@@ -46,7 +46,13 @@ class Document: NSDocument
     {
         var error: NSError? = nil
         var boxes: [Box] = []
-        let fileText = NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: &error)
+        let fileText: NSString?
+        do {
+            fileText = try NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding)
+        } catch var error1 as NSError {
+            error = error1
+            fileText = nil
+        }
 
         if let mError = error
         {
@@ -54,7 +60,7 @@ class Document: NSDocument
         }
 
         fileText!.enumerateLinesUsingBlock({line, stop in
-            var box = Box()
+            let box = Box()
             var intValue: CInt = 0
             var characterAsString: NSString?
 
@@ -66,7 +72,7 @@ class Document: NSDocument
 
             if let character = characterAsString
             {
-                box.character = character
+                box.character = character as String
             }
 
             scanner.charactersToBeSkipped = NSCharacterSet.whitespaceCharacterSet()
@@ -107,15 +113,14 @@ class Document: NSDocument
 
     }
 
-    override func readFromURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool
+    override func readFromURL(url: NSURL, ofType typeName: String) throws
     {
         readBoxFile(url.path!)
-
-        return true
     }
 
-    override func writeToURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool
+    override func writeToURL(url: NSURL, ofType typeName: String) throws
     {
+        var outError: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         var output = ""
 
         for box in boxes
@@ -123,17 +128,21 @@ class Document: NSDocument
             output = output.stringByAppendingString(box.formatForWriting())
         }
 
-        output.writeToFile(url.path!, atomically: true, encoding: NSUTF8StringEncoding, error: outError)
+        do {
+            try output.writeToFile(url.path!, atomically: true, encoding: NSUTF8StringEncoding)
+        } catch var error as NSError {
+            outError = error
+        }
 
 //        NSLog("\(outError.memory?.localizedDescription)")
 
-        if outError.memory == nil
+        if outError == nil
         {
-            return true
+            return
         }
         else
         {
-            return false
+            throw outError
         }
     }
 
