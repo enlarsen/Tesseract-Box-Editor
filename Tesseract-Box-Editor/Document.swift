@@ -49,7 +49,7 @@ class Document: NSDocument
         let fileText: NSString?
         do {
             fileText = try NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding)
-        } catch var error1 as NSError {
+        } catch let error1 as NSError {
             error = error1
             fileText = nil
         }
@@ -61,7 +61,7 @@ class Document: NSDocument
 
         fileText!.enumerateLinesUsingBlock({line, stop in
             let box = Box()
-            var intValue: CInt = 0
+//            var intValue: CInt = 0
             var characterAsString: NSString?
 
             let scanner = NSScanner(string: line)
@@ -102,8 +102,7 @@ class Document: NSDocument
         pageIndex.removeAll(keepCapacity: true)
         var current = -1
 
-        for var i = 0; i < boxes.count; i++
-        {
+        for i in 0 ..< boxes.count {
             if current != boxes[i].page
             {
                 current = boxes[i].page
@@ -130,7 +129,7 @@ class Document: NSDocument
 
         do {
             try output.writeToFile(url.path!, atomically: true, encoding: NSUTF8StringEncoding)
-        } catch var error as NSError {
+        } catch let error as NSError {
             outError = error
         }
 
