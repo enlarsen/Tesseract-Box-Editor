@@ -93,25 +93,20 @@ class CharacterView: ImageViewWithSelectionRect
 
     }
 
-    override func mouseDown(theEvent: NSEvent)
-    {
+    override func mouseDown(theEvent: NSEvent) {
         let point = convertPoint(theEvent.locationInWindow, fromView: nil)
         var transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
 
-        for var i = 0; i < selectionHandleLayers.count; i++
-        {
-            if CGPathContainsPoint(selectionHandleLayers[i].path, &transform, point, false)
-            {
+        for i in 0 ..< selectionHandleLayers.count {
+            if CGPathContainsPoint(selectionHandleLayers[i].path, &transform, point, false) {
                 self.startPointIndex = i
                 break
             }
 
         }
-        if (delegate != nil)
-        {
+        if (delegate != nil) {
             delegate!.beganDragging()
         }
-
         // TODO: also check whether the click was within the selection rectangle in prep for a move
     }
 

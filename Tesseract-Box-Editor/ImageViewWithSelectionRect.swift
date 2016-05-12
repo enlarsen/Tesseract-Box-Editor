@@ -159,13 +159,11 @@ class ImageViewWithSelectionRect: NSImageView
         handles.append(NSPoint(x: left + (right - left) / 2.0, y: top)) // top
         handles.append(NSPoint(x: (left + (right - left) / 2.0), y: bottom)) // bottom
 
-        if selectionHandleLayers.count == 0
-        {
+        if selectionHandleLayers.count == 0 {
             setupSelectionHandleLayers()
         }
         
-        for var i = 0; i < handles.count; i++
-        {
+        for i in 0 ..< handles.count {
             drawHandle(handles[i], layer: selectionHandleLayers[i])
         }
 
@@ -188,8 +186,7 @@ class ImageViewWithSelectionRect: NSImageView
 
     func setupSelectionHandleLayers()
     {
-        for var i = 0; i < numberHandles; i++
-        {
+        for _ in 0 ..< numberHandles {
             let layer = CAShapeLayer()
             layer.lineWidth = 0.1
             layer.strokeColor = NSColor.blueColor().CGColor
@@ -238,7 +235,7 @@ class ImageViewWithSelectionRect: NSImageView
     // Coordinates are inverted in this function. (0, 0) is the upper left and y increases down
     func trimImage(image: NSImage)
     {
-        let imageRef = image.CGImageForProposedRect(nil, context: nil, hints: nil)?.takeUnretainedValue()
+        let imageRef = image.CGImageForProposedRect(nil, context: nil, hints: nil)
         let width = CGImageGetWidth(imageRef)
         let height = CGImageGetHeight(imageRef)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
@@ -258,37 +255,29 @@ class ImageViewWithSelectionRect: NSImageView
         var right = Int(width)
         var bottom = Int(height)
 
-        for var x = 0; x < Int(width); x++
-        {
-            if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer)
-            {
+        for x in 0 ..< Int(width) {
+            if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer) {
                 left = x
                 break
             }
         }
-
-        for var x = Int(width) - 1; x >= 0; x--
-        {
-            if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer)
-            {
+		let xend = Int(width) - 1
+        for x in (0 ... xend).reverse() {
+            if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer) {
                 right = x
                 break
             }
         }
 
-        for var y = 0; y < Int(height); y++
-        {
-            if scanRow(y, width: Int(width), pointer: pointer)
-            {
+        for y  in 0 ..< Int(height) {
+            if scanRow(y, width: Int(width), pointer: pointer) {
                 top = y
                 break
             }
         }
-
-        for var y = Int(height) - 1; y >= 0; y--
-        {
-            if scanRow(y, width: Int(width), pointer: pointer)
-            {
+		let yend = Int(height) - 1
+        for y in (0 ... yend).reverse() {
+            if scanRow(y, width: Int(width), pointer: pointer) {
                 bottom = y
                 break
             }
@@ -311,10 +300,9 @@ class ImageViewWithSelectionRect: NSImageView
 
     func scanRow(y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
-        for var x = 0; x < width; x++
-        {
-            if pointer[(x + y * width) * 4] != 0xff // only check red, could cause trouble
-            {
+        for x in 0 ..< width {
+			// only check red, could cause trouble
+            if pointer[(x + y * width) * 4] != 0xff {
                 return true
             }
         }
@@ -323,15 +311,12 @@ class ImageViewWithSelectionRect: NSImageView
 
     func scanColumn(x: Int, height: Int, width: Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
-        for var y = 0; y < height; y++
-        {
-            if pointer[(x + y * width) * 4] != 0xff // only check red
-            {
+        for y in 0 ..< height {
+			// only check red
+            if pointer[(x + y * width) * 4] != 0xff {
                 return true
             }
         }
         return false
     }
-
-
 }

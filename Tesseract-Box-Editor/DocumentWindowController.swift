@@ -134,8 +134,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         characterView.delegate = self
     }
 
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject : AnyObject]?, context: UnsafeMutablePointer<Void>)
-    {
+	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if tableArrayController.selectedObjects.count > 0
         {
             updateSelectedCharacterDisplays()
@@ -379,10 +378,9 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     func scanRow(y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
-        for var x = 0; x < width; x++
-        {
-            if pointer[(x + y * width) * 4] != 0xff // only check red, could cause trouble
-            {
+        for x in 0 ..< width {
+			// only check red, could cause trouble
+            if pointer[(x + y * width) * 4] != 0xff {
                 return true
             }
         }
@@ -391,10 +389,9 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     func scanColumn(x: Int, height: Int, width: Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
-        for var y = 0; y < height; y++
-        {
-            if pointer[(x + y * width) * 4] != 0xff // only check red
-            {
+        for y in 0 ..< height {
+			// only check red
+            if pointer[(x + y * width) * 4] != 0xff {
                 return true
             }
         }
