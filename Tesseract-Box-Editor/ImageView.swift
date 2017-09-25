@@ -34,8 +34,8 @@ class ImageView: ImageViewWithSelectionRect
     override init(frame frameRect: NSRect)
     {
         super.init(frame: frameRect)
-        self.fillColor = NSColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 0.5).CGColor
-        self.strokeColor = NSColor.redColor().CGColor
+        self.fillColor = NSColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 0.5).cgColor
+        self.strokeColor = NSColor.red.cgColor
         self.duration = 4.0
         
         self.lineDashPattern = [2, 1]

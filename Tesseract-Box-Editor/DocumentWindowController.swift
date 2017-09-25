@@ -28,6 +28,30 @@
 
 import Cocoa
 import QuartzCore
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class DocumentWindowController: NSWindowController, BoxResizeDelegate
 {
@@ -36,9 +60,9 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     @IBOutlet var tableArrayController: NSArrayController!
     @IBOutlet var tableView: NSTableView!
 
-    override var windowNibName: String
+    override var windowNibName: NSNib.Name?
     {
-        return "Document"
+        return NSNib.Name(rawValue: "Document")
     }
 
     var currentDocument: Document
@@ -72,13 +96,13 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     {
         willSet
         {
-            self.willChangeValueForKey("isThereAPreviousPage")
-            self.willChangeValueForKey("isThereANextPage")
+            self.willChangeValue(forKey: "isThereAPreviousPage")
+            self.willChangeValue(forKey: "isThereANextPage")
         }
         didSet
         {
-            self.didChangeValueForKey("isThereAPreviousPage")
-            self.didChangeValueForKey("isThereANextPage")
+            self.didChangeValue(forKey: "isThereAPreviousPage")
+            self.didChangeValue(forKey: "isThereANextPage")
         }
     }
 
@@ -113,7 +137,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
 
-    override class func automaticallyNotifiesObserversForKey(key: String) -> Bool
+    override class func automaticallyNotifiesObservers(forKey key: String) -> Bool
     {
 
         if key == "isThereAPreviousPage" || key == "isThereANextPage"
@@ -130,11 +154,11 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     override func awakeFromNib()
     {
-        mainImageView.imageScaling = .ScaleProportionallyUpOrDown
+        mainImageView.imageScaling = .scaleProportionallyUpOrDown
         characterView.delegate = self
     }
 
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject : AnyObject]?, context: UnsafeMutablePointer<Void>)
+    func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [String : Any]?, context: UnsafeMutableRawPointer?)
     {
         if tableArrayController.selectedObjects.count > 0
         {
@@ -178,31 +202,31 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     // Someday do everything as straight up bindings.
     // Problems with direct binding: need image and crop as well as the box down in the CharacterView,
     // unless I move the image down to the viewer classes and then let them crop the image.
-    func resizeBox(rect: NSRect, index: Int)
+    @objc func resizeBox(_ rect: NSRect, index: Int)
     {
         let box = boxes[index]
         box.x = Int(rect.origin.x)
         box.y = Int(rect.origin.y)
         box.width = Int(rect.size.width)
         box.height = Int(rect.size.height)
-        if self.window!.undoManager!.undoing && index == tableArrayController.selectionIndex
+        if self.window!.undoManager!.isUndoing && index == tableArrayController.selectionIndex
         {
             updateSelectedCharacterDisplays()
         }
     }
 
-    func changeCharacter(char: String, index: Int)
+    @objc func changeCharacter(_ char: String, index: Int)
     {
         let box = boxes[index]
-        self.window!.undoManager!.prepareWithInvocationTarget(self).changeCharacter(box.character, index: index)
-        if !self.window!.undoManager!.undoing
+        (self.window!.undoManager!.prepare(withInvocationTarget: self) as AnyObject).changeCharacter(box.character, index: index)
+        if !self.window!.undoManager!.isUndoing
         {
             self.window!.undoManager!.setActionName("Change \"\(box.character)\" to \"\(char)\"")
         }
         box.character = char
     }
 
-    func boxDidResize(rect: NSRect)
+    func boxDidResize(_ rect: NSRect)
     {
         let selectionIndex = tableArrayController.selectionIndex
         resizeBox(rect, index: selectionIndex)
@@ -214,8 +238,8 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         let selectionIndex = tableArrayController.selectionIndex
         let currentRect = box.boxToNSRect()
 
-        self.window!.undoManager!.prepareWithInvocationTarget(self).resizeBox(currentRect, index: selectionIndex)
-        if !self.window!.undoManager!.undoing
+        (self.window!.undoManager!.prepare(withInvocationTarget: self) as AnyObject).resizeBox(currentRect, index: selectionIndex)
+        if !self.window!.undoManager!.isUndoing
         {
             self.window!.undoManager!.setActionName("Resize Box")
         }
@@ -227,31 +251,31 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         updateSelectedCharacterDisplays()
     }
 
-    func insertBox(box: Box, index: Int)
+    @objc func insertBox(_ box: Box, index: Int)
     {
-        self.window!.undoManager!.prepareWithInvocationTarget(self).removeBox(index)
+        (self.window!.undoManager!.prepare(withInvocationTarget: self) as AnyObject).removeBox(index)
 
-        if !self.window!.undoManager!.undoing
+        if !self.window!.undoManager!.isUndoing
         {
             self.window!.undoManager!.setActionName("Insert Box")
         }
-        boxes.insert(box, atIndex: index)
+        boxes.insert(box, at: index)
     }
 
-    func removeBox(index: Int)
+    @objc func removeBox(_ index: Int)
     {
         let box = boxes[index]
-        self.window!.undoManager!.prepareWithInvocationTarget(self).insertBox(box, index: index)
+        (self.window!.undoManager!.prepare(withInvocationTarget: self) as AnyObject).insertBox(box, index: index)
 
-        if !self.window!.undoManager!.undoing
+        if !self.window!.undoManager!.isUndoing
         {
             self.window!.undoManager!.setActionName("Delete Box")
         }
-        boxes.removeAtIndex(index)
+        boxes.remove(at: index)
 
     }
 
-    func mergeBoxes(index: Int)
+    func mergeBoxes(_ index: Int)
     {
         let firstBox = boxes[index]
 
@@ -260,10 +284,10 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
             let secondBox = boxes[index + 1]
             self.window!.undoManager!.beginUndoGrouping()
 
-            self.window!.undoManager!.prepareWithInvocationTarget(self).insertBox(secondBox, index: index + 1)
-            self.window!.undoManager!.prepareWithInvocationTarget(self).resizeBox(firstBox.boxToNSRect(), index: index)
+            (self.window!.undoManager!.prepare(withInvocationTarget: self) as AnyObject).insertBox(secondBox, index: index + 1)
+            (self.window!.undoManager!.prepare(withInvocationTarget: self) as AnyObject).resizeBox(firstBox.boxToNSRect(), index: index)
 
-            if !self.window!.undoManager!.undoing
+            if !self.window!.undoManager!.isUndoing
             {
                 self.window!.undoManager!.setActionName("Merge Boxes")
             }
@@ -283,16 +307,16 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     }
 
-    func splitBoxes(index: Int)
+    func splitBoxes(_ index: Int)
     {
         let box = boxes[index]
 
         self.window!.undoManager!.beginUndoGrouping()
 
-        self.window!.undoManager!.prepareWithInvocationTarget(self).removeBox(index + 1)
-        self.window!.undoManager!.prepareWithInvocationTarget(self).resizeBox(box.boxToNSRect(), index:index)
+        (self.window!.undoManager!.prepare(withInvocationTarget: self) as AnyObject).removeBox(index + 1)
+        (self.window!.undoManager!.prepare(withInvocationTarget: self) as AnyObject).resizeBox(box.boxToNSRect(), index:index)
 
-        if !self.window!.undoManager!.undoing
+        if !self.window!.undoManager!.isUndoing
         {
             self.window!.undoManager!.setActionName("Split Box")
         }
@@ -307,30 +331,30 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         newBox.x2 = box.x2
         box.x2 = newBox.x - 2
 
-        boxes.insert(newBox, atIndex: index + 1)
+        boxes.insert(newBox, at: index + 1)
 
         currentDocument.createPageIndex()
         updateSelectedCharacterDisplays()
 
     }
 
-    @IBAction func mergeToolbarItem(sender: NSToolbarItem)
+    @IBAction func mergeToolbarItem(_ sender: NSToolbarItem)
     {
 
         mergeBoxes(tableArrayController.selectionIndex)
     }
 
-    @IBAction func splitToolbarItem(sender: NSToolbarItem)
+    @IBAction func splitToolbarItem(_ sender: NSToolbarItem)
     {
         splitBoxes(tableArrayController.selectionIndex)
     }
 
-    func deleteToolbarItem(sender: NSToolbarItem)
+    func deleteToolbarItem(_ sender: NSToolbarItem)
     {
         removeBox(tableArrayController.selectionIndex)
     }
 
-    func insertToolbarItem(sender: NSToolbarItem)
+    func insertToolbarItem(_ sender: NSToolbarItem)
     {
         let index = tableArrayController.selectionIndex
 
@@ -348,7 +372,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
     // The KVO will see the change in selection and update the image view
-    @IBAction func previousPage(sender: NSButton)
+    @IBAction func previousPage(_ sender: NSButton)
     {
         let index = currentTiffPage - 1
         if index < 0
@@ -363,7 +387,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     }
 
-    @IBAction func nextPage(sender: NSButton)
+    @IBAction func nextPage(_ sender: NSButton)
     {
         let index = currentTiffPage + 1
         if index >= boxes.count
@@ -377,9 +401,9 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     }
 
-    func scanRow(y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
+    func scanRow(_ y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
-        for var x = 0; x < width; x++
+        for x in 0 ..< width
         {
             if pointer[(x + y * width) * 4] != 0xff // only check red, could cause trouble
             {
@@ -389,9 +413,9 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         return false
     }
 
-    func scanColumn(x: Int, height: Int, width: Int, pointer: UnsafePointer<UInt8>) -> Bool
+    func scanColumn(_ x: Int, height: Int, width: Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
-        for var y = 0; y < height; y++
+        for y in 0 ..< height
         {
             if pointer[(x + y * width) * 4] != 0xff // only check red
             {
@@ -401,7 +425,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
         return false
     }
 
-    func updateCharacterView(box: Box)
+    func updateCharacterView(_ box: Box)
     {
         if box.page < pagesFromImage.count
         {
@@ -412,13 +436,13 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
             croppedImage.lockFocus()
             NSGraphicsContext.saveGraphicsState()
-            NSGraphicsContext.currentContext()?.imageInterpolation = NSImageInterpolation.None
-            NSGraphicsContext.currentContext()?.shouldAntialias = false
+            NSGraphicsContext.current?.imageInterpolation = NSImageInterpolation.none
+            NSGraphicsContext.current?.shouldAntialias = false
 
-            image.drawInRect(NSRect(x: 0, y: 0, width: box.width + 10, height: box.height + 10),
-                fromRect: NSRect(x: box.x - 5, y: box.y - 5,
+            image.draw(in: NSRect(x: 0, y: 0, width: box.width + 10, height: box.height + 10),
+                       from: NSRect(x: box.x - 5, y: box.y - 5,
                     width: box.width + 10, height: box.height + 10),
-                operation: NSCompositingOperation.CompositeCopy,
+                operation: .copy,
                 fraction: 1.0)
 
             NSGraphicsContext.restoreGraphicsState()
@@ -429,7 +453,7 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
 
-    func windowDidResize(notification: NSNotification!)
+    func windowDidResize(_ notification: Notification!)
     {
         if mainImageView.image != nil
         {
@@ -447,9 +471,9 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
             observing = false
         }
 
-        if let tiffUrl = currentDocument.fileURL?.URLByDeletingPathExtension!.URLByAppendingPathExtension("tif")
+        if let tiffUrl = currentDocument.fileURL?.deletingPathExtension().appendingPathExtension("tif")
         {
-            let imageFromFile = NSImage(byReferencingURL: tiffUrl)
+            let imageFromFile = NSImage(byReferencing: tiffUrl)
             pagesFromImage = imageFromFile.representations as! [NSBitmapImageRep]
             mainImageView.trimImage(imageFromFile)
             currentTiffPage = 0
@@ -467,14 +491,14 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
 
     // TODO: Need to allow composed characters
     // TODO: Investigate the method for interpreting characters, see orange book
-    override func keyDown(theEvent: NSEvent)
+    override func keyDown(with theEvent: NSEvent)
     {
         self.interpretKeyEvents([theEvent])
 
     }
 
     // function for interpretKeyEvents
-    override func insertText(insertString: AnyObject)
+    override func insertText(_ insertString: Any)
     {
         if let characters = insertString as? String
         {
@@ -484,18 +508,18 @@ class DocumentWindowController: NSWindowController, BoxResizeDelegate
     }
 
 
-    override func encodeRestorableStateWithCoder(coder: NSCoder)
+    override func encodeRestorableState(with coder: NSCoder)
     {
-        super.encodeRestorableStateWithCoder(coder)
-        coder.encodeInteger(tableArrayController.selectionIndex, forKey: "selectionIndex")
+        super.encodeRestorableState(with: coder)
+        coder.encode(tableArrayController.selectionIndex, forKey: "selectionIndex")
 
 
     }
 
-    override func restoreStateWithCoder(coder: NSCoder)
+    override func restoreState(with coder: NSCoder)
     {
-        super.restoreStateWithCoder(coder)
-        let index = coder.decodeIntegerForKey("selectionIndex")
+        super.restoreState(with: coder)
+        let index = coder.decodeInteger(forKey: "selectionIndex")
 
         tableArrayController.setSelectionIndex(index)
         tableView.scrollRowToVisible(index)

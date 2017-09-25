@@ -36,20 +36,20 @@ class Document: NSDocument
     var pageIndex = Dictionary<Int, Int>()
 
 
-    override var windowNibName: String
+    override var windowNibName: NSNib.Name?
     {
-        return "Document"
+        return NSNib.Name(rawValue: "Document")
     }
 
     // TODO: This needs vastly improved error handling and value checking
-    func readBoxFile(path: String)
+    func readBoxFile(_ path: String)
     {
         var error: NSError? = nil
         var boxes: [Box] = []
         let fileText: NSString?
         do {
-            fileText = try NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding)
-        } catch var error1 as NSError {
+            fileText = try NSString(contentsOfFile: path, encoding: String.Encoding.utf8.rawValue)
+        } catch let error1 as NSError {
             error = error1
             fileText = nil
         }
@@ -59,23 +59,23 @@ class Document: NSDocument
             NSLog("Error: \(mError.localizedDescription)")
         }
 
-        fileText!.enumerateLinesUsingBlock({line, stop in
+        fileText!.enumerateLines({line, stop in
             let box = Box()
-            var intValue: CInt = 0
+//            var intValue: CInt = 0
             var characterAsString: NSString?
 
-            let scanner = NSScanner(string: line)
+            let scanner = Scanner(string: line)
             scanner.caseSensitive = true
             scanner.charactersToBeSkipped = nil
 
-            scanner.scanUpToString(" ", intoString: &characterAsString)
+            scanner.scanUpTo(" ", into: &characterAsString)
 
             if let character = characterAsString
             {
                 box.character = character as String
             }
 
-            scanner.charactersToBeSkipped = NSCharacterSet.whitespaceCharacterSet()
+            scanner.charactersToBeSkipped = CharacterSet.whitespaces
 
             box.x = self.getNextIntValue(scanner)
             box.y = self.getNextIntValue(scanner)
@@ -89,20 +89,20 @@ class Document: NSDocument
     }
 
 
-    func getNextIntValue(scanner: NSScanner) -> Int
+    func getNextIntValue(_ scanner: Scanner) -> Int
     {
         var intValue: CInt = 0
         
-        scanner.scanInt(&intValue)
+        scanner.scanInt32(&intValue)
         return Int(intValue)
     }
 
     func createPageIndex()
     {
-        pageIndex.removeAll(keepCapacity: true)
+        pageIndex.removeAll(keepingCapacity: true)
         var current = -1
 
-        for var i = 0; i < boxes.count; i++
+        for i in 0 ..< boxes.count
         {
             if current != boxes[i].page
             {
@@ -113,24 +113,24 @@ class Document: NSDocument
 
     }
 
-    override func readFromURL(url: NSURL, ofType typeName: String) throws
+    override func read(from url: URL, ofType typeName: String) throws
     {
-        readBoxFile(url.path!)
+        readBoxFile(url.path)
     }
 
-    override func writeToURL(url: NSURL, ofType typeName: String) throws
+    override func write(to url: URL, ofType typeName: String) throws
     {
         var outError: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         var output = ""
 
         for box in boxes
         {
-            output = output.stringByAppendingString(box.formatForWriting())
+            output = output + box.formatForWriting()
         }
 
         do {
-            try output.writeToFile(url.path!, atomically: true, encoding: NSUTF8StringEncoding)
-        } catch var error as NSError {
+            try output.write(toFile: url.path, atomically: true, encoding: String.Encoding.utf8)
+        } catch let error as NSError {
             outError = error
         }
 
@@ -148,7 +148,7 @@ class Document: NSDocument
 
     override func makeWindowControllers()
     {
-        let windowController = DocumentWindowController(windowNibName: self.windowNibName)
+        let windowController = DocumentWindowController(windowNibName: NSNib.Name(rawValue: self.windowNibName!.rawValue))
         addWindowController(windowController)
     }
 
