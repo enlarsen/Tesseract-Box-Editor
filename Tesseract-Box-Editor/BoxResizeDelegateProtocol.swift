@@ -10,7 +10,7 @@ import Foundation
 
 protocol BoxResizeDelegate
 {
-    func boxDidResize(rect: NSRect)
+    func boxDidResize(_ rect: NSRect)
     func doneDragging()
     func beganDragging()
 }

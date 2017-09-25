@@ -40,8 +40,8 @@ class CharacterView: ImageViewWithSelectionRect
     override init(frame frameRect: NSRect)
     {
         super.init(frame: frameRect)
-        strokeColor = NSColor.grayColor().CGColor
-        fillColor = NSColor.clearColor().CGColor
+        strokeColor = NSColor.gray.cgColor
+        fillColor = NSColor.clear.cgColor
         lineDashPattern = [1, 1]
         duration = 10.0
     }
@@ -52,20 +52,18 @@ class CharacterView: ImageViewWithSelectionRect
 
     override func awakeFromNib()
     {
-        imageScaling = .ScaleProportionallyUpOrDown
+        imageScaling = .scaleProportionallyUpOrDown
         drawSelectionHandles = true
 
     }
 
 
-    func propagateValue(id: AnyObject, binding:NSString)
+    func propagateValue(_ id: AnyObject, binding:NSString)
     {
-        if let bindingInfo = self.infoForBinding(binding as String)
+        if let bindingInfo = self.infoForBinding(NSBindingName(rawValue: binding as String))
         {
-            if let bindingOptions : AnyObject = bindingInfo[NSOptionsKey]
-            {
-                let transformer: NSValueTransformer = bindingOptions[NSValueTransformerBindingOption] as! NSValueTransformer
-            }
+            let bindingOptions: AnyObject = bindingInfo[NSBindingInfoKey.options] as AnyObject
+            let _: ValueTransformer = bindingOptions[NSBindingOption.valueTransformer] as! ValueTransformer
         }
         else
         {
@@ -74,7 +72,7 @@ class CharacterView: ImageViewWithSelectionRect
 
     }
 
-    func updateCharacter(image: NSImage, cropPoint: NSPoint, rect: NSRect)
+    func updateCharacter(_ image: NSImage, cropPoint: NSPoint, rect: NSRect)
     {
         self.image = image
 
@@ -93,14 +91,14 @@ class CharacterView: ImageViewWithSelectionRect
 
     }
 
-    override func mouseDown(theEvent: NSEvent)
+    override func mouseDown(with theEvent: NSEvent)
     {
-        let point = convertPoint(theEvent.locationInWindow, fromView: nil)
-        var transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
+        let point = convert(theEvent.locationInWindow, from: nil)
+        let transform = CATransform3DGetAffineTransform(selectionLayer.transform).inverted()
 
-        for var i = 0; i < selectionHandleLayers.count; i++
+        for i in 0 ..< selectionHandleLayers.count
         {
-            if CGPathContainsPoint(selectionHandleLayers[i].path, &transform, point, false)
+            if selectionHandleLayers[i].path?.contains(point, using: .winding, transform: transform) ?? false
             {
                 self.startPointIndex = i
                 break
@@ -115,7 +113,7 @@ class CharacterView: ImageViewWithSelectionRect
         // TODO: also check whether the click was within the selection rectangle in prep for a move
     }
 
-    override func mouseUp(theEvent: NSEvent)
+    override func mouseUp(with theEvent: NSEvent)
     {
         startPointIndex = -1
 
@@ -125,11 +123,11 @@ class CharacterView: ImageViewWithSelectionRect
         }
     }
 
-    override func mouseDragged(theEvent: NSEvent)
+    override func mouseDragged(with theEvent: NSEvent)
     {
-        var point = convertPoint(theEvent.locationInWindow, fromView: nil)
-        let transform = CGAffineTransformInvert(CATransform3DGetAffineTransform(selectionLayer.transform))
-        point = CGPointApplyAffineTransform(point, transform)
+        var point = convert(theEvent.locationInWindow, from: nil)
+        let transform = CATransform3DGetAffineTransform(selectionLayer.transform).inverted()
+        point = point.applying(transform)
         
         let newRect = computeResizedSelectionRectangle(self.startPointIndex, dragPoint: point)
 //        NSLog("newRect: \(newRect)")

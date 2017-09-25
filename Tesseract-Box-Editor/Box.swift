@@ -60,7 +60,7 @@ class Box: NSObject
         }
     }
 
-    class func boxToNSRect(box: Box) -> NSRect
+    class func boxToNSRect(_ box: Box) -> NSRect
     {
         return NSRect(x: box.x, y: box.y, width: box.width, height: box.height)
     }

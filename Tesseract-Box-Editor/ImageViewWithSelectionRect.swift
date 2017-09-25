@@ -37,22 +37,22 @@ class ImageViewWithSelectionRect: NSImageView
     var selectionHandleLayers: [CAShapeLayer] = []
     var drawSelectionHandles = false
 
-    var cropPoint = CGPointZero
+    var cropPoint = CGPoint.zero
 
     var selectionRect = NSZeroRect
-    var strokeColor = NSColor.blackColor().CGColor
-    var fillColor = NSColor.clearColor().CGColor
+    var strokeColor = NSColor.black.cgColor
+    var fillColor = NSColor.clear.cgColor
     var lineDashPattern = [10, 15]
     var duration = 0.75
     var numberHandles = 4
 
-    func setupAnimatedSelectionRect(rect: NSRect)
+    func setupAnimatedSelectionRect(_ rect: NSRect)
     {
 
         selectionLayer = createAnimationLayer()
         layer!.addSublayer(selectionLayer)
 
-        selectionLayer.addAnimation(createAnimation(), forKey: "linePhase")
+        selectionLayer.add(createAnimation(), forKey: "linePhase")
 
 
         selectionLayer.transform = createTransform(self.cropPoint)
@@ -68,15 +68,16 @@ class ImageViewWithSelectionRect: NSImageView
         return
     }
 
-    func drawSelectionRect(rect: NSRect)
+    func drawSelectionRect(_ rect: NSRect)
     {
-        let path = CGPathCreateMutable()
+        let path = CGMutablePath()
 
-        CGPathMoveToPoint(path, nil, rect.origin.x, rect.origin.y)
-        CGPathAddLineToPoint(path, nil, rect.origin.x, rect.origin.y + rect.size.height)
-        CGPathAddLineToPoint(path, nil, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height)
-        CGPathAddLineToPoint(path, nil, rect.origin.x + rect.size.width, rect.origin.y)
-        CGPathCloseSubpath(path)
+        path.move(to: rect.origin)
+        path.addLine(to: CGPoint(x: rect.origin.x, y: rect.origin.y + rect.size.height))
+        path.addLine(to: CGPoint(x: rect.origin.x + rect.size.width, y: rect.origin.y + rect.size.height))
+        path.addLine(to: CGPoint(x: rect.origin.x + rect.size.width, y: rect.origin.y))
+
+        path.closeSubpath()
 
         selectionLayer.path = path
     }
@@ -88,7 +89,7 @@ class ImageViewWithSelectionRect: NSImageView
         shapeLayer.lineWidth = 0.5
         shapeLayer.strokeColor = strokeColor
         shapeLayer.fillColor = fillColor
-        shapeLayer.lineDashPattern = lineDashPattern
+        shapeLayer.lineDashPattern = lineDashPattern as [NSNumber]
 
         return shapeLayer
         
@@ -100,14 +101,14 @@ class ImageViewWithSelectionRect: NSImageView
         dashAnimation.fromValue = 0.0
         dashAnimation.toValue = 15.0
         dashAnimation.duration = duration
-        dashAnimation.cumulative = true
+        dashAnimation.isCumulative = true
         dashAnimation.repeatCount = HUGE
 
         return dashAnimation
     }
 
 
-    func createTransform(cropPoint: NSPoint) -> CATransform3D
+    func createTransform(_ cropPoint: NSPoint) -> CATransform3D
     {
         var verticalPadding: CGFloat = 0.0
         var horizontalPadding: CGFloat = 0.0
@@ -144,7 +145,7 @@ class ImageViewWithSelectionRect: NSImageView
         return transform
     }
 
-    func drawHandles(rect: NSRect)
+    func drawHandles(_ rect: NSRect)
     {
         var handles: [NSPoint] = []
 
@@ -164,23 +165,24 @@ class ImageViewWithSelectionRect: NSImageView
             setupSelectionHandleLayers()
         }
         
-        for var i = 0; i < handles.count; i++
+        for i in 0 ..< handles.count
         {
             drawHandle(handles[i], layer: selectionHandleLayers[i])
         }
 
     }
 
-    func drawHandle(point: NSPoint, layer: CAShapeLayer)
+    func drawHandle(_ point: NSPoint, layer: CAShapeLayer)
     {
         let size: CGFloat = 0.5
-        let path = CGPathCreateMutable()
+        let path = CGMutablePath()
+        
+        path.move(to: CGPoint(x: point.x - size, y: point.y - size))
+        path.addLine(to: CGPoint(x: point.x - size, y: point.y + size))
+        path.addLine(to: CGPoint(x: point.x + size, y: point.y + size))
+        path.addLine(to: CGPoint(x: point.x + size, y: point.y - size))
 
-        CGPathMoveToPoint(path, nil, point.x - size, point.y - size)
-        CGPathAddLineToPoint(path, nil, point.x - size, point.y + size)
-        CGPathAddLineToPoint(path, nil, point.x + size, point.y + size)
-        CGPathAddLineToPoint(path, nil, point.x + size, point.y - size)
-        CGPathCloseSubpath(path)
+        path.closeSubpath()
 
         layer.path = path
 
@@ -188,12 +190,12 @@ class ImageViewWithSelectionRect: NSImageView
 
     func setupSelectionHandleLayers()
     {
-        for var i = 0; i < numberHandles; i++
+        for _ in 0 ..< numberHandles
         {
             let layer = CAShapeLayer()
             layer.lineWidth = 0.1
-            layer.strokeColor = NSColor.blueColor().CGColor
-            layer.fillColor = NSColor.blueColor().CGColor
+            layer.strokeColor = NSColor.blue.cgColor
+            layer.fillColor = NSColor.blue.cgColor
             layer.transform = selectionLayer.transform
 
             selectionHandleLayers.append(layer)
@@ -209,11 +211,11 @@ class ImageViewWithSelectionRect: NSImageView
             layer.removeFromSuperlayer()
         }
         
-        selectionHandleLayers.removeAll(keepCapacity: true)
+        selectionHandleLayers.removeAll(keepingCapacity: true)
         selectionLayer = nil
     }
 
-    func computeResizedSelectionRectangle(index: Int, dragPoint: NSPoint) -> NSRect
+    func computeResizedSelectionRectangle(_ index: Int, dragPoint: NSPoint) -> NSRect
     {
         var left = Int(selectionRect.origin.x)
         var right = Int(selectionRect.origin.x + selectionRect.size.width)
@@ -236,29 +238,32 @@ class ImageViewWithSelectionRect: NSImageView
     }
 
     // Coordinates are inverted in this function. (0, 0) is the upper left and y increases down
-    func trimImage(image: NSImage)
+    func trimImage(_ image: NSImage)
     {
-        let imageRef = image.CGImageForProposedRect(nil, context: nil, hints: nil)?.takeUnretainedValue()
-        let width = CGImageGetWidth(imageRef)
-        let height = CGImageGetHeight(imageRef)
+        if let imageRef = image.cgImage(forProposedRect: nil, context: nil, hints: nil) { //.takeUnretainedValue()
+        let width = imageRef.width
+        let height = imageRef.height
         let colorSpace = CGColorSpaceCreateDeviceRGB()
 
         let bytesPerPixel: Int = 4
         let bytesPerComponent: Int = 8
         let rawData = calloc(height * width * bytesPerPixel, 1)
-        let pointer = UnsafePointer<UInt8>(rawData)
+            if rawData == nil {
+                return
+            }
+        let pointer = rawData!.assumingMemoryBound(to: UInt8.self)
         let bytesPerRow = bytesPerPixel * width
-        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedLast.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue)
-        let context = CGBitmapContextCreate(rawData, width, height, bytesPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue)
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue)
+        let context = CGContext(data: rawData, width: width, height: height, bitsPerComponent: bytesPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo.rawValue)
 
-        CGContextDrawImage(context, CGRect(x: 0, y: 0, width: Int(width), height: Int(height)), imageRef)
+        context?.draw(imageRef, in: CGRect(x: 0, y: 0, width: Int(width), height: Int(height)))
 
         var top = 0
         var left = 0
         var right = Int(width)
         var bottom = Int(height)
 
-        for var x = 0; x < Int(width); x++
+        for x in 0 ..< Int(width)
         {
             if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer)
             {
@@ -267,7 +272,7 @@ class ImageViewWithSelectionRect: NSImageView
             }
         }
 
-        for var x = Int(width) - 1; x >= 0; x--
+        for x in (Int(width) - 1)...0
         {
             if scanColumn(x, height: Int(height), width: Int(width), pointer: pointer)
             {
@@ -276,7 +281,7 @@ class ImageViewWithSelectionRect: NSImageView
             }
         }
 
-        for var y = 0; y < Int(height); y++
+        for y in 0 ..< Int(height)
         {
             if scanRow(y, width: Int(width), pointer: pointer)
             {
@@ -285,7 +290,7 @@ class ImageViewWithSelectionRect: NSImageView
             }
         }
 
-        for var y = Int(height) - 1; y >= 0; y--
+        for y in (Int(height) - 1)...0
         {
             if scanRow(y, width: Int(width), pointer: pointer)
             {
@@ -304,14 +309,15 @@ class ImageViewWithSelectionRect: NSImageView
         let bitmapRep = NSBitmapImageRep(focusedViewRect: cropRect)
         image.unlockFocus()
 
-        let croppedImage = NSImage(data: bitmapRep!.representationUsingType(.NSPNGFileType, properties: [:])!)
+        let croppedImage = NSImage(data: bitmapRep!.representation(using: .png, properties: [:])!)
         cropPoint = cropRect.origin
         self.image = croppedImage
     }
+    }
 
-    func scanRow(y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
+    func scanRow(_ y: Int, width:Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
-        for var x = 0; x < width; x++
+        for x in 0 ..< width
         {
             if pointer[(x + y * width) * 4] != 0xff // only check red, could cause trouble
             {
@@ -321,9 +327,9 @@ class ImageViewWithSelectionRect: NSImageView
         return false
     }
 
-    func scanColumn(x: Int, height: Int, width: Int, pointer: UnsafePointer<UInt8>) -> Bool
+    func scanColumn(_ x: Int, height: Int, width: Int, pointer: UnsafePointer<UInt8>) -> Bool
     {
-        for var y = 0; y < height; y++
+        for y in 0 ..< height
         {
             if pointer[(x + y * width) * 4] != 0xff // only check red
             {
